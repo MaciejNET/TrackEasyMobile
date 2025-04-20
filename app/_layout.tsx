@@ -5,10 +5,26 @@ import {useEffect} from "react";
 import {useFonts} from "expo-font";
 import {DarkTheme, DefaultTheme, ThemeProvider} from "@react-navigation/native";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native";
+import { View, ViewStyle } from "react-native";
+import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColorMode } from "@/hooks/useColorMode";
+import React from "react";
 
 SplashScreen.preventAutoHideAsync();
+
+interface SafeTopViewProps {
+  children: React.ReactNode;
+  style?: ViewStyle | ViewStyle[];
+}
+
+function SafeTopView({ children, style }: SafeTopViewProps) {
+  const insets = useSafeAreaInsets();
+  return (
+    <View style={[{ flex: 1, paddingTop: insets.top }, style]}>
+      {children}
+    </View>
+  );
+}
 
 export default function RootLayout() {
   const { colorMode, setColorMode } = useColorMode();
@@ -31,11 +47,13 @@ export default function RootLayout() {
   return (
     <GluestackUIProvider mode={colorMode}>
       <ThemeProvider value={theme}>
-        <SafeAreaView style={{flex: 1, backgroundColor: theme.colors.background}}>
-          <GestureHandlerRootView>
-            <Stack screenOptions={{headerShown: false}}/>
-          </GestureHandlerRootView>
-        </SafeAreaView>
+        <SafeAreaProvider>
+          <SafeTopView style={{backgroundColor: theme.colors.background}}>
+            <GestureHandlerRootView style={{flex: 1}}>
+              <Stack screenOptions={{headerShown: false}}/>
+            </GestureHandlerRootView>
+          </SafeTopView>
+        </SafeAreaProvider>
       </ThemeProvider>
     </GluestackUIProvider>
   )

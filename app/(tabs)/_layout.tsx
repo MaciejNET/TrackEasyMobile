@@ -27,9 +27,9 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="trivia"
+        name="fun-facts"
         options={{
-          title: "Trivia",
+          title: "Fun Facts",
           tabBarIcon: ({ color }) => (
             <Ionicons name="help-circle-outline" size={24} color={color} />
           ),
