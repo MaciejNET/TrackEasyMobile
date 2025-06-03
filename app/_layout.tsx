@@ -9,8 +9,13 @@ import { View, ViewStyle } from "react-native";
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColorMode } from "@/hooks/useColorMode";
 import React from "react";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 SplashScreen.preventAutoHideAsync();
+
+// Create a client
+const queryClient = new QueryClient();
 
 interface SafeTopViewProps {
   children: React.ReactNode;
@@ -28,33 +33,34 @@ function SafeTopView({ children, style }: SafeTopViewProps) {
 
 export default function RootLayout() {
   const { colorMode, setColorMode } = useColorMode();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
 
+  // Using default system font instead of custom font
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
+    // Hide splash screen when component mounts
+    SplashScreen.hideAsync();
+  }, []);
 
   const theme = colorMode === "dark" ? DarkTheme : DefaultTheme;
 
   return (
-    <GluestackUIProvider mode={colorMode}>
-      <ThemeProvider value={theme}>
-        <SafeAreaProvider>
-          <SafeTopView style={{backgroundColor: theme.colors.background}}>
-            <GestureHandlerRootView style={{flex: 1}}>
-              <Stack screenOptions={{headerShown: false}}/>
-            </GestureHandlerRootView>
-          </SafeTopView>
-        </SafeAreaProvider>
-      </ThemeProvider>
-    </GluestackUIProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <GluestackUIProvider mode={colorMode}>
+          <ThemeProvider value={theme}>
+            <SafeAreaProvider>
+              <SafeTopView style={{backgroundColor: theme.colors.background}}>
+                <GestureHandlerRootView style={{flex: 1}}>
+                  <Stack screenOptions={{headerShown: false}}>
+                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+                    <Stack.Screen name="auth/register" options={{ headerShown: false }} />
+                  </Stack>
+                </GestureHandlerRootView>
+              </SafeTopView>
+            </SafeAreaProvider>
+          </ThemeProvider>
+        </GluestackUIProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   )
 }
