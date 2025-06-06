@@ -54,6 +54,9 @@ export default function RootLayout() {
                     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                     <Stack.Screen name="auth/login" options={{ headerShown: false }} />
                     <Stack.Screen name="auth/register" options={{ headerShown: false }} />
+                    <Stack.Screen name="ticket/[id]" options={{ headerShown: false }} />
+                    <Stack.Screen name="ticket/stations" options={{ headerShown: false }} />
+                    <Stack.Screen name="ticket/cancel" options={{ headerShown: false }} />
                   </Stack>
                 </GestureHandlerRootView>
               </SafeTopView>
