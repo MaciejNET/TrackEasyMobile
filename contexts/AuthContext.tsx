@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { authApi, setAuthToken } from '@/services/api';
+import authApi from '@/services/auth';
+import { setAuthToken } from '@/services/baseApi';
 import { UserDto } from '@/schemas/auth';
 import * as SecureStore from 'expo-secure-store';
 
@@ -37,7 +38,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const loadToken = async () => {
       try {
         const storedToken = await SecureStore.getItemAsync(TOKEN_KEY);
-        
+
         if (storedToken) {
           setToken(storedToken);
           setAuthToken(storedToken);
@@ -70,14 +71,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       const authToken = await authApi.login({ email, password });
-      
+
       // Save token to secure storage
       await SecureStore.setItemAsync(TOKEN_KEY, authToken);
-      
+
       // Set token in state and axios defaults
       setToken(authToken);
       setAuthToken(authToken);
-      
+
       // Fetch user data
       await fetchUserData(authToken);
     } catch (error) {
@@ -99,7 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         password,
         dateOfBirth,
       });
-      
+
       // After registration, log the user in
       await login(email, password);
     } catch (error) {
@@ -116,7 +117,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Remove token from storage
       await SecureStore.deleteItemAsync(TOKEN_KEY);
-      
+
       // Clear auth state
       setToken(null);
       setUser(null);

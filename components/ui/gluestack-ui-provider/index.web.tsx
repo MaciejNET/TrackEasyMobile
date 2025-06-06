@@ -81,7 +81,7 @@ export function GluestackUIProvider({
   }, []);
 
   return (
-    <>
+    <div style={{ display: 'contents' }}>
       <script
         suppressHydrationWarning
         dangerouslySetInnerHTML={{
@@ -91,6 +91,6 @@ export function GluestackUIProvider({
       <OverlayProvider>
         <ToastProvider>{props.children}</ToastProvider>
       </OverlayProvider>
-    </>
+    </div>
   );
 }

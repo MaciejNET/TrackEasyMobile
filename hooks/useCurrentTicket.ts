@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ticketApi } from '@/services/api';
+import ticketApi from '@/services/ticket';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function useCurrentTicket() {
