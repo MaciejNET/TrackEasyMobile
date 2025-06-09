@@ -7,7 +7,10 @@ import { PrimitiveIcon, Svg } from '@gluestack-ui/icon';
 
 export const UIIcon = createIcon({
   Root: PrimitiveIcon,
-});
+}) as React.ForwardRefExoticComponent<
+  React.ComponentPropsWithoutRef<typeof PrimitiveIcon> &
+    React.RefAttributes<React.ComponentRef<typeof Svg>>
+>;
 
 const iconStyle = tva({
   base: 'text-typography-950 fill-none pointer-events-none',
@@ -25,38 +28,10 @@ const iconStyle = tva({
 
 export const Icon = React.forwardRef<
   React.ComponentRef<typeof UIIcon>,
-  React.ComponentPropsWithoutRef<typeof UIIcon> &
-    VariantProps<typeof iconStyle> & {
-      height?: number | string;
-      width?: number | string;
-    }
->(function Icon({ size = 'md', className, ...props }, ref) {
-  if (typeof size === 'number') {
-    return (
-      <UIIcon
-        // @ts-expect-error : TODO: fix this
-        ref={ref}
-        {...props}
-        className={iconStyle({ class: className })}
-        size={size}
-      />
-    );
-  } else if (
-    (props.height !== undefined || props.width !== undefined) &&
-    size === undefined
-  ) {
-    return (
-      <UIIcon
-        // @ts-expect-error : TODO: fix this
-        ref={ref}
-        {...props}
-        className={iconStyle({ class: className })}
-      />
-    );
-  }
+  React.ComponentPropsWithoutRef<typeof UIIcon> & VariantProps<typeof iconStyle>
+>(({ size = 'md', className, ...props }, ref) => {
   return (
     <UIIcon
-      // @ts-expect-error : TODO: fix this
       ref={ref}
       {...props}
       className={iconStyle({ size, class: className })}
@@ -73,23 +48,24 @@ const accessClassName = (style: any) => {
 };
 
 const createIconUI = ({ ...props }: ParameterTypes) => {
-  const NewUIIcon = createIcon({ Root: Svg, ...props });
+  const NewUIIcon = createIcon({ Root: Svg, ...props }) as React.ForwardRefExoticComponent<
+    React.ComponentPropsWithoutRef<typeof PrimitiveIcon> &
+      React.RefAttributes<React.ComponentRef<typeof Svg>>
+  >;
+
   return React.forwardRef<
     React.ComponentRef<typeof UIIcon>,
     React.ComponentPropsWithoutRef<typeof UIIcon> &
-      VariantProps<typeof iconStyle> & {
-        height?: number | string;
-        width?: number | string;
-      }
+      VariantProps<typeof iconStyle>
   >(function UIIcon({ className, ...inComingprops }, ref) {
     const calculateClassName = React.useMemo(() => {
       return className === undefined
         ? accessClassName(inComingprops?.style)
         : className;
     }, [className, inComingprops?.style]);
+
     return (
       <NewUIIcon
-        // @ts-expect-error : TODO: fix this
         ref={ref}
         {...inComingprops}
         className={calculateClassName}

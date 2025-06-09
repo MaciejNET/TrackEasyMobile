@@ -38,11 +38,11 @@ export default function StationsScreen() {
                     <Text className={`${textColor}`}>← Back</Text>
                 </Button>
                 <Heading className={`${textColor}`}>All Stations</Heading>
-                <Box width={50} /> {/* Empty box for alignment */}
+                <Box className="w-[50px]" /> {/* Empty box for alignment */}
             </HStack>
 
             {parsedStations.length === 0 ? (
-                <Center flex={1}>
+                <Center className="flex-1">
                     <Text className={textColor}>No stations found</Text>
                 </Center>
             ) : (

@@ -79,12 +79,12 @@ export default function AccountScreen() {
         <Text className={textColor}>{user.email}</Text>
 
         <Box className="mt-4 w-full">
-          {user.operatorId && (
+          {user.operatorId ? (
             <Box className={`${isDark ? 'bg-gray-800' : 'bg-gray-100'} rounded-lg p-4 mb-4 border ${isDark ? 'border-white' : 'border-gray-300'}`}>
               <Text className={`${isDark ? 'text-gray-300' : 'text-gray-500'} mb-1`}>Operator ID</Text>
               <Text className={`font-medium ${textColor}`}>{user.operatorId}</Text>
             </Box>
-          )}
+          ) : null}
         </Box>
 
         <Button 
