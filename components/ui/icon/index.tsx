@@ -41,44 +41,18 @@ cssInterop(UIIcon, {
   },
 });
 
-type IIConProps = IPrimitiveIcon &
-  VariantProps<typeof iconStyle> &
-  React.ComponentPropsWithoutRef<typeof UIIcon>;
-
-const Icon = React.forwardRef<React.ComponentRef<typeof UIIcon>, IIConProps>(
-  function Icon({ size = 'md', className, ...props }, ref) {
-    if (typeof size === 'number') {
-      return (
-        <UIIcon
-          ref={ref}
-          {...props}
-          className={iconStyle({ class: className })}
-          size={size}
-        />
-      );
-    } else if (
-      (props.height !== undefined || props.width !== undefined) &&
-      size === undefined
-    ) {
-      return (
-        <UIIcon
-          ref={ref}
-          {...props}
-          className={iconStyle({ class: className })}
-        />
-      );
-    }
-    return (
-      <UIIcon
-        ref={ref}
-        {...props}
-        className={iconStyle({ size, class: className })}
-      />
-    );
-  }
-);
-
-export { Icon };
+export const Icon = React.forwardRef<
+  React.ComponentRef<typeof UIIcon>,
+  React.ComponentPropsWithoutRef<typeof UIIcon> & VariantProps<typeof iconStyle>
+>(({ size = 'md', className, ...props }, ref) => {
+  return (
+    <UIIcon
+      ref={ref}
+      {...props}
+      className={iconStyle({ size, class: className })}
+    />
+  );
+});
 
 type ParameterTypes = Omit<Parameters<typeof createIcon>[0], 'Root'>;
 
@@ -91,15 +65,11 @@ const createIconUI = ({ ...props }: ParameterTypes) => {
       React.RefAttributes<React.ComponentRef<typeof Svg>>
   >;
 
-  return React.forwardRef<React.ComponentRef<typeof Svg>>(function UIIcon(
-    {
-      className,
-      size,
-      ...inComingProps
-    }: VariantProps<typeof iconStyle> &
-      React.ComponentPropsWithoutRef<typeof UIIconCreateIcon>,
-    ref
-  ) {
+  return React.forwardRef<
+    React.ComponentRef<typeof UIIcon>,
+    React.ComponentPropsWithoutRef<typeof UIIcon> &
+      VariantProps<typeof iconStyle>
+  >(function UIIcon({ className, size, ...inComingProps }, ref) {
     return (
       <UIIconCreateIcon
         ref={ref}

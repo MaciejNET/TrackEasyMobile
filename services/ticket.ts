@@ -119,9 +119,16 @@ const cancelTicket = async (ticketId: string): Promise<void> => {
 /**
  * Request a refund for a ticket
  * @param refundRequest Refund request data
+ * @param ticketStatus Optional ticket status, if provided will check if refund is allowed
  */
-const requestRefund = async (refundRequest: RefundRequest): Promise<void> => {
+const requestRefund = async (refundRequest: RefundRequest, ticketStatus?: string): Promise<void> => {
   try {
+    // Check if ticket status is provided and is not PAID
+    if (ticketStatus && ticketStatus !== "PAID") {
+      console.error(`Cannot request refund for ticket with status: ${ticketStatus}`);
+      throw new Error(`Refund is only available for PAID tickets, current status: ${ticketStatus}`);
+    }
+
     const validation = refundRequestSchema.safeParse(refundRequest);
 
     if (!validation.success) {
@@ -129,7 +136,90 @@ const requestRefund = async (refundRequest: RefundRequest): Promise<void> => {
       throw new Error("Invalid refund request data");
     }
 
-    await baseApi.post("/tickets/refund-request", refundRequest);
+    // Log the request data for debugging
+    console.log("Refund request data:", JSON.stringify(refundRequest));
+
+    // Create a modified request with the email field in a different format
+    // Try with both camelCase and snake_case variations
+    const modifiedRequest = {
+      ...refundRequest,
+      // Add additional fields or format changes here if needed
+      userEmail: refundRequest.email, // Try alternative field name
+      user_email: refundRequest.email, // Try snake_case variation
+      emailAddress: refundRequest.email, // Try another alternative
+      email_address: refundRequest.email, // Try snake_case variation
+    };
+
+    console.log("Modified refund request data:", JSON.stringify(modifiedRequest));
+
+    try {
+      // Try the original endpoint with POST method first
+      try {
+        const response = await baseApi.post("/tickets/refund-request", modifiedRequest);
+        console.log("Refund request successful (POST):", response.status, response.statusText);
+        return; // Exit if successful
+      } catch (originalError: any) {
+        console.error("Original POST request error:", originalError.message);
+        if (originalError.response) {
+          console.error("Response status:", originalError.response.status);
+          console.error("Response data:", JSON.stringify(originalError.response.data));
+        }
+
+        // If the original request fails, try with the original data
+        try {
+          console.log("Trying with original request data...");
+          const originalResponse = await baseApi.post("/tickets/refund-request", refundRequest);
+          console.log("Refund request successful (original data):", originalResponse.status, originalResponse.statusText);
+          return; // Exit if successful
+        } catch (originalDataError: any) {
+          console.error("Original data request error:", originalDataError.message);
+          if (originalDataError.response) {
+            console.error("Response status:", originalDataError.response.status);
+            console.error("Response data:", JSON.stringify(originalDataError.response.data));
+          }
+        }
+
+        // Try a simplified request with just the essential fields
+        try {
+          console.log("Trying with simplified request data...");
+          const simplifiedRequest = {
+            userId: refundRequest.userId,
+            ticketId: refundRequest.ticketId,
+            reason: refundRequest.reason,
+            email: refundRequest.email
+          };
+          const simplifiedResponse = await baseApi.post("/tickets/refund-request", simplifiedRequest);
+          console.log("Refund request successful (simplified data):", simplifiedResponse.status, simplifiedResponse.statusText);
+          return; // Exit if successful
+        } catch (simplifiedError: any) {
+          console.error("Simplified request error:", simplifiedError.message);
+          if (simplifiedError.response) {
+            console.error("Response status:", simplifiedError.response.status);
+            console.error("Response data:", JSON.stringify(simplifiedError.response.data));
+          }
+        }
+
+        // If all POST attempts fail, try PUT method
+        try {
+          console.log("Trying PUT method...");
+          const putResponse = await baseApi.put("/tickets/refund-request", modifiedRequest);
+          console.log("Refund request successful (PUT):", putResponse.status, putResponse.statusText);
+          return; // Exit if successful
+        } catch (putError: any) {
+          console.error("PUT request error:", putError.message);
+          if (putError.response) {
+            console.error("Response status:", putError.response.status);
+            console.error("Response data:", JSON.stringify(putError.response.data));
+          }
+        }
+
+        // If we get here, all attempts failed
+        throw originalError; // Throw the original error
+      }
+    } catch (apiError: any) {
+      console.error("All refund request attempts failed:", apiError.message);
+      throw apiError;
+    }
   } catch (error) {
     console.error("Failed to request refund:", error);
     throw error;

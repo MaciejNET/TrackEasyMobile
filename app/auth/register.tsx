@@ -100,11 +100,11 @@ export default function RegisterScreen() {
           <Text className={`text-center ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>Sign up to get started</Text>
         </Box>
 
-        {error && (
+        {error ? (
           <Box className={`mb-4 p-3 ${isDark ? 'bg-red-900' : 'bg-red-100'} rounded-md`}>
             <Text className={isDark ? 'text-white' : 'text-red-700'}>{error}</Text>
           </Box>
-        )}
+        ) : null}
 
         <FormControl isInvalid={!!errors.firstName} className="mb-4">
           <FormControl.Label>
@@ -126,11 +126,11 @@ export default function RegisterScreen() {
             )}
             name="firstName"
           />
-          {errors.firstName && (
+          {errors.firstName ? (
             <FormControl.Error>
               <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.firstName.message}</Text>
             </FormControl.Error>
-          )}
+          ) : null}
         </FormControl>
 
         <FormControl isInvalid={!!errors.lastName} className="mb-4">
@@ -153,11 +153,11 @@ export default function RegisterScreen() {
             )}
             name="lastName"
           />
-          {errors.lastName && (
+          {errors.lastName ? (
             <FormControl.Error>
               <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.lastName.message}</Text>
             </FormControl.Error>
-          )}
+          ) : null}
         </FormControl>
 
         <FormControl isInvalid={!!errors.email} className="mb-4">
@@ -182,11 +182,11 @@ export default function RegisterScreen() {
             )}
             name="email"
           />
-          {errors.email && (
+          {errors.email ? (
             <FormControl.Error>
               <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.email.message}</Text>
             </FormControl.Error>
-          )}
+          ) : null}
         </FormControl>
 
         <FormControl isInvalid={!!errors.dateOfBirth} className="mb-4">
@@ -210,11 +210,11 @@ export default function RegisterScreen() {
             )}
             name="dateOfBirth"
           />
-          {errors.dateOfBirth && (
+          {errors.dateOfBirth ? (
             <FormControl.Error>
               <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.dateOfBirth.message}</Text>
             </FormControl.Error>
-          )}
+          ) : null}
         </FormControl>
 
         <FormControl isInvalid={!!errors.password} className="mb-4">
@@ -238,11 +238,11 @@ export default function RegisterScreen() {
             )}
             name="password"
           />
-          {errors.password && (
+          {errors.password ? (
             <FormControl.Error>
               <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.password.message}</Text>
             </FormControl.Error>
-          )}
+          ) : null}
         </FormControl>
 
         <FormControl isInvalid={!!errors.confirmPassword} className="mb-6">
@@ -266,11 +266,11 @@ export default function RegisterScreen() {
             )}
             name="confirmPassword"
           />
-          {errors.confirmPassword && (
+          {errors.confirmPassword ? (
             <FormControl.Error>
               <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.confirmPassword.message}</Text>
             </FormControl.Error>
-          )}
+          ) : null}
         </FormControl>
 
         <Button

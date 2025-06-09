@@ -46,7 +46,11 @@ export default function TicketsScreen() {
     });
 
     const handleTicketPress = (ticket: Ticket) => {
-        router.push(`/ticket/${ticket.id}`);
+        // Pass the tab parameter to indicate whether the ticket is from the current tab or the archive tab
+        router.push({
+            pathname: "/ticket/[id]",
+            params: { id: ticket.id, tab }
+        });
     };
 
     if (userLoading) {

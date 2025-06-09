@@ -73,6 +73,7 @@ export const refundRequestSchema = z.object({
   userId: z.string().uuid(),
   ticketId: z.string().uuid(),
   reason: z.string(),
+  email: z.string().email(),
 });
 
 export type RefundRequest = z.infer<typeof refundRequestSchema>;
