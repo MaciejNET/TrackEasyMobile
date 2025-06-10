@@ -87,6 +87,13 @@ export default function AccountScreen() {
           )}
         </Box>
 
+        <Button
+            onPress={() => router.push('/account/edit')}
+            className={`mt-2 w-full ${buttonBgColor} border border-gray-300`}
+        >
+          <Text className={`font-medium ${buttonTextColor}`}>Edytuj dane</Text>
+        </Button>
+
         <Button 
           onPress={handleLogout}
           className={`mt-6 w-full ${buttonBgColor} border border-gray-300`}
