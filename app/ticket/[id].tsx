@@ -7,28 +7,81 @@ import { Center } from "@/components/ui/center";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-    Image,
-    HStack,
-    InputField,
-    ScrollView,
-    Divider
-} from "@gluestack-ui/themed";
+import { HStack } from "@/components/ui/hstack";
+import { InputField } from "@/components/ui/input";
+import { Image, ScrollView, View } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import ticketApi from "@/services/ticket";
 import { useColorMode } from "@/hooks/useColorMode";
 import { TicketDetails, QrCode, RefundRequest } from "@/schemas/ticket";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useCurrentTicket } from "@/hooks/useCurrentTicket";
+
+// Format time only (HH:MM)
+const formatTime = (timeString: string): string => {
+    if (!timeString) return 'N/A';
+
+    try {
+        // If it's just a time string (HH:MM:SS)
+        if (/^\d{2}:\d{2}(:\d{2})?$/.test(timeString)) {
+            // Return just HH:MM
+            return timeString.substring(0, 5);
+        }
+
+        // Try to parse as date
+        const date = new Date(timeString);
+
+        // Check if date is valid
+        if (!isNaN(date.getTime())) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Return the original string if we can't parse it
+        return timeString;
+    } catch (error) {
+        // If any error occurs, return the original string
+        return timeString;
+    }
+};
+
+// Format date for display
+const formatDate = (dateString: string): string => {
+    if (!dateString) return 'N/A';
+
+    try {
+        // Try to parse the date
+        const date = new Date(dateString);
+
+        // Check if date is valid
+        if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString();
+        }
+
+        // Return the original string if we can't parse it
+        return dateString;
+    } catch (error) {
+        // If any error occurs, return the original string
+        return dateString;
+    }
+};
+
+// Safely parse date for comparison
+const safeParseDate = (dateString: string): Date | null => {
+    try {
+        const date = new Date(dateString);
+        return !isNaN(date.getTime()) ? date : null;
+    } catch (error) {
+        return null;
+    }
+};
 
 export default function TicketDetailsScreen() {
     const { id, tab } = useLocalSearchParams<{ id: string, tab?: string }>();
     // Check if the ticket is from the current tab
     const isCurrentTab = tab === "current";
     const router = useRouter();
-    const { user } = useAuth();
-    const { colorMode } = useColorMode();
+    const { user, token, isAuthenticated } = useAuth();
+    const { colorMode, colorModeKey } = useColorMode();
     const isDark = colorMode === "dark";
     const textColor = isDark ? "text-white" : "text-black";
     const bgColor = isDark ? "bg-gray-800" : "bg-white";
@@ -38,8 +91,16 @@ export default function TicketDetailsScreen() {
     const [refundReason, setRefundReason] = useState("");
     const [showRefundForm, setShowRefundForm] = useState(false);
 
-    // Get current ticket ID
-    const { currentTicketId } = useCurrentTicket();
+    // Get current ticket ID directly
+    const { data: currentTicketId, isLoading: isLoadingCurrentTicket } = useQuery({
+        queryKey: ['currentTicket'],
+        queryFn: async () => {
+            if (!token) return null;
+            return await ticketApi.getCurrentTicket();
+        },
+        enabled: !!token && isAuthenticated,
+        refetchOnMount: true, // Always refetch when component mounts
+    });
 
     // Fetch ticket details
     const {
@@ -118,13 +179,17 @@ export default function TicketDetailsScreen() {
         if (!ticket) return false;
 
         const now = new Date();
-        const departureTime = new Date(ticket.departureTime);
+        const departureTime = safeParseDate(ticket.departureTime);
+
+        // If we couldn't parse the departure time, assume journey hasn't started
+        if (!departureTime) return false;
+
         return now > departureTime;
     };
 
-    if (detailsLoading) {
+    if (detailsLoading || isLoadingCurrentTicket) {
         return (
-            <Center className="flex-1">
+            <Center className="flex-1" key={colorModeKey}>
                 <Spinner size="large" />
             </Center>
         );
@@ -132,7 +197,7 @@ export default function TicketDetailsScreen() {
 
     if (!ticketDetails) {
         return (
-            <Center className={`flex-1 ${bgColor}`}>
+            <Center className={`flex-1 ${bgColor}`} key={colorModeKey}>
                 <Text className={`text-lg ${textColor}`}>Ticket not found</Text>
                 <Button 
                     className={`mt-4 ${isDark ? "bg-blue-700" : "bg-blue-600"}`}
@@ -145,7 +210,7 @@ export default function TicketDetailsScreen() {
     }
 
     return (
-        <Box className={`flex-1 p-4 ${bgColor}`}>
+        <Box className={`flex-1 p-4 ${bgColor}`} key={colorModeKey}>
             <HStack className="justify-between items-center mb-4">
                 <Button
                     variant="link"
@@ -194,9 +259,9 @@ export default function TicketDetailsScreen() {
                             <Text className={`font-bold ${textColor}`}>Journey</Text>
                             <Text className={textColor}>From: {ticketDetails.stations[0]?.name}</Text>
                             <Text className={textColor}>To: {ticketDetails.stations[ticketDetails.stations.length - 1]?.name}</Text>
-                            <Text className={textColor}>Date: {new Date(ticketDetails.connectionDate).toLocaleDateString()}</Text>
-                            <Text className={textColor}>Departure: {ticketDetails.departureTime}</Text>
-                            <Text className={textColor}>Arrival: {ticketDetails.arrivalTime}</Text>
+                            <Text className={textColor}>Date: {formatDate(ticketDetails.connectionDate)}</Text>
+                            <Text className={textColor}>Departure: {formatTime(ticketDetails.departureTime)}</Text>
+                            <Text className={textColor}>Arrival: {formatTime(ticketDetails.arrivalTime)}</Text>
                             <Button 
                                 className={`mt-2 ${isDark ? "bg-blue-700" : "bg-blue-600"}`}
                                 onPress={() => {

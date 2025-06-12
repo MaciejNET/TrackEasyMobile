@@ -7,11 +7,12 @@ import { useRouter } from "expo-router";
 import { ActivityIndicator } from "react-native";
 import { Spinner } from "@/components/ui/spinner";
 import { useColorMode } from "@/hooks/useColorMode";
+import { HStack } from "@/components/ui/hstack";
 
 export default function AccountScreen() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
-  const { colorMode } = useColorMode();
+  const { colorMode, toggleColorMode, colorModeKey } = useColorMode();
 
   // Define theme-based styles
   const isDark = colorMode === "dark";
@@ -26,7 +27,7 @@ export default function AccountScreen() {
 
   if (isLoading) {
     return (
-      <Box className="flex-1 justify-center items-center">
+      <Box className="flex-1 justify-center items-center" key={colorModeKey}>
         <Spinner size="large" />
       </Box>
     );
@@ -34,9 +35,21 @@ export default function AccountScreen() {
 
   if (!user) {
     return (
-      <Box className="flex-1 p-4">
+      <Box className="flex-1 p-4" key={colorModeKey}>
         <Box className="flex flex-col items-center space-y-4">
-          <Text className={`text-2xl font-bold ${textColor}`}>Account</Text>
+          <HStack className="w-full justify-between items-center">
+            <Text className={`text-2xl font-bold ${textColor}`}>Account</Text>
+            <Button 
+              onPress={toggleColorMode}
+              className={`${isDark ? 'bg-yellow-400' : 'bg-gray-800'} rounded-full w-10 h-10 items-center justify-center`}
+            >
+              <Ionicons 
+                name={isDark ? "sunny" : "moon"} 
+                size={24} 
+                color={isDark ? "black" : "white"} 
+              />
+            </Button>
+          </HStack>
 
           <Box className="w-20 h-20 bg-gray-300 rounded-full mt-4 items-center justify-center">
             <Ionicons name="person-outline" size={32} color={isDark ? "white" : "black"} />
@@ -65,9 +78,21 @@ export default function AccountScreen() {
   }
 
   return (
-    <Box className="flex-1 p-4">
+    <Box className="flex-1 p-4" key={colorModeKey}>
       <Box className="flex flex-col items-center space-y-4">
-        <Text className={`text-2xl font-bold ${textColor}`}>Account</Text>
+        <HStack className="w-full justify-between items-center">
+          <Text className={`text-2xl font-bold ${textColor}`}>Account</Text>
+          <Button 
+            onPress={toggleColorMode}
+            className={`${isDark ? 'bg-yellow-400' : 'bg-gray-800'} rounded-full w-10 h-10 items-center justify-center`}
+          >
+            <Ionicons 
+              name={isDark ? "sunny" : "moon"} 
+              size={24} 
+              color={isDark ? "black" : "white"} 
+            />
+          </Button>
+        </HStack>
 
         <Box className={`w-20 h-20 ${isDark ? 'bg-blue-400' : 'bg-blue-500'} rounded-full mt-4 items-center justify-center`}>
           <Ionicons name="person" size={32} color={isDark ? "black" : "white"} />
@@ -91,7 +116,7 @@ export default function AccountScreen() {
             onPress={() => router.push('/account/edit')}
             className={`mt-2 w-full ${buttonBgColor} border border-gray-300`}
         >
-          <Text className={`font-medium ${buttonTextColor}`}>Edytuj dane</Text>
+          <Text className={`font-medium ${buttonTextColor}`}>Edit Profile</Text>
         </Button>
 
         <Button 

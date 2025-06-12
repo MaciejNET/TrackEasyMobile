@@ -1,16 +1,14 @@
 import React, { useState } from "react";
-import {
-    Box,
-    Text,
-    VStack,
-    Heading,
-    Center,
-    Pressable,
-    FlatList,
-    Button,
-    Spinner,
-    HStack,
-} from "@gluestack-ui/themed";
+import { Box } from "@/components/ui/box";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
+import { Heading } from "@/components/ui/heading";
+import { Center } from "@/components/ui/center";
+import { Pressable } from "@/components/ui/pressable";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { HStack } from "@/components/ui/hstack";
+import { FlatList } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import ticketApi from "@/services/ticket";
@@ -18,11 +16,59 @@ import { useColorMode } from "@/hooks/useColorMode";
 import { Ticket } from "@/schemas/ticket";
 import { useRouter } from "expo-router";
 
+// Format time only (HH:MM)
+const formatTime = (timeString: string): string => {
+    if (!timeString) return 'N/A';
+
+    try {
+        // If it's just a time string (HH:MM:SS)
+        if (/^\d{2}:\d{2}(:\d{2})?$/.test(timeString)) {
+            // Return just HH:MM
+            return timeString.substring(0, 5);
+        }
+
+        // Try to parse as date
+        const date = new Date(timeString);
+
+        // Check if date is valid
+        if (!isNaN(date.getTime())) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Return the original string if we can't parse it
+        return timeString;
+    } catch (error) {
+        // If any error occurs, return the original string
+        return timeString;
+    }
+};
+
+// Format date for display
+const formatDate = (dateString: string): string => {
+    if (!dateString) return 'N/A';
+
+    try {
+        // Try to parse the date
+        const date = new Date(dateString);
+
+        // Check if date is valid
+        if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString();
+        }
+
+        // Return the original string if we can't parse it
+        return dateString;
+    } catch (error) {
+        // If any error occurs, return the original string
+        return dateString;
+    }
+};
+
 const PAGE_SIZE = 10;
 
 export default function TicketsScreen() {
     const { user, isLoading: userLoading } = useAuth();
-    const { colorMode } = useColorMode();
+    const { colorMode, colorModeKey } = useColorMode();
     const isDark = colorMode === "dark";
     const textColor = isDark ? "text-white" : "text-black";
     const bgColor = isDark ? "bg-gray-800" : "bg-white";
@@ -55,7 +101,7 @@ export default function TicketsScreen() {
 
     if (userLoading) {
         return (
-            <Center flex={1}>
+            <Center className="flex-1" key={colorModeKey}>
                 <Spinner size="large" />
             </Center>
         );
@@ -63,14 +109,14 @@ export default function TicketsScreen() {
 
     if (!user) {
         return (
-            <Center flex={1} className={bgColor}>
+            <Center className={`flex-1 ${bgColor}`} key={colorModeKey}>
                 <Text className={`text-lg ${textColor}`}>You must be logged in to view your tickets.</Text>
             </Center>
         );
     }
 
     return (
-        <Box className={`flex-1 p-4 ${bgColor}`}>
+        <Box className={`flex-1 p-4 ${bgColor}`} key={colorModeKey}>
             <Heading className={`mb-4 ${textColor}`}>Your Tickets</Heading>
 
             {/* Tabs */}
@@ -105,15 +151,16 @@ export default function TicketsScreen() {
 
             {/* Tickets List */}
             {ticketsLoading ? (
-                <Center flex={1}>
+                <Center className="flex-1" key={colorModeKey}>
                     <Spinner size="large" />
                 </Center>
             ) : ticketsData?.items.length === 0 ? (
-                <Center flex={1}>
+                <Center className="flex-1" key={colorModeKey}>
                     <Text className={textColor}>No tickets found</Text>
                 </Center>
             ) : (
                 <FlatList
+                    key={colorModeKey}
                     data={ticketsData?.items || []}
                     keyExtractor={(item: unknown, index: number) => (item as Ticket).id}
                     renderItem={({ item }: { item: unknown }) => {
@@ -134,7 +181,7 @@ export default function TicketsScreen() {
                                             Departure
                                         </Text>
                                         <Text className={textColor}>
-                                            {ticket.departureTime}
+                                            {formatTime(ticket.departureTime)}
                                         </Text>
                                     </VStack>
                                     <VStack>
@@ -142,12 +189,12 @@ export default function TicketsScreen() {
                                             Arrival
                                         </Text>
                                         <Text className={textColor}>
-                                            {ticket.arrivalTime}
+                                            {formatTime(ticket.arrivalTime)}
                                         </Text>
                                     </VStack>
                                 </HStack>
                                 <Text className={`mt-2 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
-                                    Date: {new Date(ticket.connectionDate).toLocaleDateString()}
+                                    Date: {formatDate(ticket.connectionDate)}
                                 </Text>
                             </Box>
                         </Pressable>

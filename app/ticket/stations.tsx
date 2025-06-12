@@ -6,13 +6,38 @@ import { Heading } from "@/components/ui/heading";
 import { Center } from "@/components/ui/center";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
-import {
-    HStack,
-    ScrollView,
-} from "@gluestack-ui/themed";
+import { HStack } from "@/components/ui/hstack";
+import { ScrollView } from "react-native";
 import { useColorMode } from "@/hooks/useColorMode";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Station } from "@/schemas/ticket";
+
+// Format time only (HH:MM)
+const formatTime = (timeString: string): string => {
+    if (!timeString) return 'N/A';
+
+    try {
+        // If it's just a time string (HH:MM:SS)
+        if (/^\d{2}:\d{2}(:\d{2})?$/.test(timeString)) {
+            // Return just HH:MM
+            return timeString.substring(0, 5);
+        }
+
+        // Try to parse as date
+        const date = new Date(timeString);
+
+        // Check if date is valid
+        if (!isNaN(date.getTime())) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Return the original string if we can't parse it
+        return timeString;
+    } catch (error) {
+        // If any error occurs, return the original string
+        return timeString;
+    }
+};
 
 export default function StationsScreen() {
     const params = useLocalSearchParams<{ stations: string }>();
@@ -56,7 +81,7 @@ export default function StationsScreen() {
                                         Arrival
                                     </Text>
                                     <Text className={textColor}>
-                                        {station.arrivalTime || 'N/A'}
+                                        {formatTime(station.arrivalTime)}
                                     </Text>
                                 </VStack>
                                 <VStack>
@@ -64,7 +89,7 @@ export default function StationsScreen() {
                                         Departure
                                     </Text>
                                     <Text className={textColor}>
-                                        {station.departureTime || 'N/A'}
+                                        {formatTime(station.departureTime)}
                                     </Text>
                                 </VStack>
                             </HStack>

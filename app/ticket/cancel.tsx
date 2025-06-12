@@ -5,9 +5,7 @@ import { Heading } from "@/components/ui/heading";
 import { Center } from "@/components/ui/center";
 import { Button } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
-import {
-    HStack,
-} from "@gluestack-ui/themed";
+import { HStack } from "@/components/ui/hstack";
 import { useColorMode } from "@/hooks/useColorMode";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import ticketApi from "@/services/ticket";
