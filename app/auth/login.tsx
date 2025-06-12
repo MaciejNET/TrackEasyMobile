@@ -5,8 +5,7 @@ import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { FormControl } from '@gluestack-ui/themed';
-import { InputField } from '@gluestack-ui/themed';
+import { InputField } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/contexts/AuthContext';
 import { Alert } from '@/components/ui/alert';
@@ -77,14 +76,12 @@ export default function LoginScreen() {
         </Box>
       ) : null}
 
-      <FormControl isInvalid={!!errors.email} className="mb-4">
-        <FormControl.Label>
-          <Text className={`font-medium mb-1 ${textColor}`}>Email</Text>
-        </FormControl.Label>
+      <Box className="mb-4">
+        <Text className={`font-medium mb-1 ${textColor}`}>Email</Text>
         <Controller
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
-            <Input className={`border ${inputBorderColor} rounded-md`}>
+            <Input className={`border ${inputBorderColor} rounded-md ${!!errors.email ? 'border-red-500' : ''}`}>
               <InputField
                 placeholder="Enter your email"
                 onBlur={onBlur}
@@ -100,20 +97,16 @@ export default function LoginScreen() {
           name="email"
         />
         {errors.email ? (
-          <FormControl.Error>
-            <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.email.message}</Text>
-          </FormControl.Error>
+          <Text className={isDark ? 'text-red-400' : 'text-red-500 mt-1 text-sm'}>{errors.email.message}</Text>
         ) : null}
-      </FormControl>
+      </Box>
 
-      <FormControl isInvalid={!!errors.password} className="mb-6">
-        <FormControl.Label>
-          <Text className={`font-medium mb-1 ${textColor}`}>Password</Text>
-        </FormControl.Label>
+      <Box className="mb-6">
+        <Text className={`font-medium mb-1 ${textColor}`}>Password</Text>
         <Controller
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
-            <Input className={`border ${inputBorderColor} rounded-md`}>
+            <Input className={`border ${inputBorderColor} rounded-md ${!!errors.password ? 'border-red-500' : ''}`}>
               <InputField
                 placeholder="Enter your password"
                 onBlur={onBlur}
@@ -128,11 +121,9 @@ export default function LoginScreen() {
           name="password"
         />
         {errors.password ? (
-          <FormControl.Error>
-            <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.password.message}</Text>
-          </FormControl.Error>
+          <Text className={isDark ? 'text-red-400' : 'text-red-500 mt-1 text-sm'}>{errors.password.message}</Text>
         ) : null}
-      </FormControl>
+      </Box>
 
       <Button
         onPress={handleSubmit(onSubmit)}
@@ -145,6 +136,24 @@ export default function LoginScreen() {
           <Text className={`font-medium ${buttonTextColor}`}>Sign In</Text>
         )}
       </Button>
+
+      <Box className="mb-6">
+        <Text className={`text-center mb-4 ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>Or sign in with</Text>
+        <Box className="flex-row justify-center space-x-4">
+          <Button
+            onPress={() => router.push('/auth/external-login?provider=google')}
+            className={`flex-1 ${isDark ? 'bg-red-600' : 'bg-red-500'}`}
+          >
+            <Text className="text-white font-medium">Google</Text>
+          </Button>
+          <Button
+            onPress={() => router.push('/auth/external-login?provider=microsoft')}
+            className={`flex-1 ${isDark ? 'bg-blue-700' : 'bg-blue-600'}`}
+          >
+            <Text className="text-white font-medium">Microsoft</Text>
+          </Button>
+        </Box>
+      </Box>
 
       <Box className="flex-row justify-center">
         <Text className={isDark ? 'text-gray-300' : 'text-gray-500'}>Don't have an account? </Text>

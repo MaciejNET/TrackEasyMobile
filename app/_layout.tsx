@@ -32,7 +32,7 @@ function SafeTopView({ children, style }: SafeTopViewProps) {
 }
 
 export default function RootLayout() {
-  const { colorMode, setColorMode } = useColorMode();
+  const { colorMode, setColorMode, colorModeKey } = useColorMode();
 
   // Using default system font instead of custom font
   useEffect(() => {
@@ -40,12 +40,14 @@ export default function RootLayout() {
     SplashScreen.hideAsync();
   }, []);
 
+  // Using colorModeKey in the component to force re-render when color mode changes
   const theme = colorMode === "dark" ? DarkTheme : DefaultTheme;
 
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <GluestackUIProvider mode={colorMode}>
+        {/* Using colorModeKey as a key prop to force complete re-render when color mode changes */}
+        <GluestackUIProvider mode={colorMode} key={colorModeKey}>
           <ThemeProvider value={theme}>
             <SafeAreaProvider>
               <SafeTopView style={{backgroundColor: theme.colors.background}}>

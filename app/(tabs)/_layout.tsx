@@ -4,11 +4,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { Text } from "@/components/ui/text";
 
 export default function TabsLayout() {
-  const { colorMode } = useColorMode();
+  const { colorMode, colorModeKey } = useColorMode();
   const iconColor = colorMode === "dark" ? "white" : "black";
 
   return (
     <Tabs
+      key={colorModeKey}
       screenOptions={{
         tabBarActiveTintColor: iconColor,
         tabBarInactiveTintColor: "gray",

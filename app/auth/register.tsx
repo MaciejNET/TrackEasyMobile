@@ -5,8 +5,7 @@ import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { FormControl } from '@gluestack-ui/themed';
-import { InputField } from '@gluestack-ui/themed';
+import { InputField } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/contexts/AuthContext';
 import { ScrollView } from 'react-native';
@@ -106,14 +105,12 @@ export default function RegisterScreen() {
           </Box>
         ) : null}
 
-        <FormControl isInvalid={!!errors.firstName} className="mb-4">
-          <FormControl.Label>
-            <Text className={`font-medium mb-1 ${textColor}`}>First Name</Text>
-          </FormControl.Label>
+        <Box className="mb-4">
+          <Text className={`font-medium mb-1 ${textColor}`}>First Name</Text>
           <Controller
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
-              <Input className={`border ${inputBorderColor} rounded-md`}>
+              <Input className={`border ${inputBorderColor} rounded-md ${!!errors.firstName ? 'border-red-500' : ''}`}>
                 <InputField
                   placeholder="Enter your first name"
                   onBlur={onBlur}
@@ -127,20 +124,16 @@ export default function RegisterScreen() {
             name="firstName"
           />
           {errors.firstName ? (
-            <FormControl.Error>
-              <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.firstName.message}</Text>
-            </FormControl.Error>
+            <Text className={isDark ? 'text-red-400' : 'text-red-500 mt-1 text-sm'}>{errors.firstName.message}</Text>
           ) : null}
-        </FormControl>
+        </Box>
 
-        <FormControl isInvalid={!!errors.lastName} className="mb-4">
-          <FormControl.Label>
-            <Text className={`font-medium mb-1 ${textColor}`}>Last Name</Text>
-          </FormControl.Label>
+        <Box className="mb-4">
+          <Text className={`font-medium mb-1 ${textColor}`}>Last Name</Text>
           <Controller
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
-              <Input className={`border ${inputBorderColor} rounded-md`}>
+              <Input className={`border ${inputBorderColor} rounded-md ${!!errors.lastName ? 'border-red-500' : ''}`}>
                 <InputField
                   placeholder="Enter your last name"
                   onBlur={onBlur}
@@ -154,20 +147,16 @@ export default function RegisterScreen() {
             name="lastName"
           />
           {errors.lastName ? (
-            <FormControl.Error>
-              <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.lastName.message}</Text>
-            </FormControl.Error>
+            <Text className={isDark ? 'text-red-400' : 'text-red-500 mt-1 text-sm'}>{errors.lastName.message}</Text>
           ) : null}
-        </FormControl>
+        </Box>
 
-        <FormControl isInvalid={!!errors.email} className="mb-4">
-          <FormControl.Label>
-            <Text className={`font-medium mb-1 ${textColor}`}>Email</Text>
-          </FormControl.Label>
+        <Box className="mb-4">
+          <Text className={`font-medium mb-1 ${textColor}`}>Email</Text>
           <Controller
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
-              <Input className={`border ${inputBorderColor} rounded-md`}>
+              <Input className={`border ${inputBorderColor} rounded-md ${!!errors.email ? 'border-red-500' : ''}`}>
                 <InputField
                   placeholder="Enter your email"
                   onBlur={onBlur}
@@ -183,26 +172,21 @@ export default function RegisterScreen() {
             name="email"
           />
           {errors.email ? (
-            <FormControl.Error>
-              <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.email.message}</Text>
-            </FormControl.Error>
+            <Text className={isDark ? 'text-red-400' : 'text-red-500 mt-1 text-sm'}>{errors.email.message}</Text>
           ) : null}
-        </FormControl>
+        </Box>
 
-        <FormControl isInvalid={!!errors.dateOfBirth} className="mb-4">
-          <FormControl.Label>
-            <Text className={`font-medium mb-1 ${textColor}`}>Date of Birth (MM/DD/YYYY)</Text>
-          </FormControl.Label>
+        <Box className="mb-4">
+          <Text className={`font-medium mb-1 ${textColor}`}>Date of Birth (MM/DD/YYYY)</Text>
           <Controller
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
-              <Input className={`border ${inputBorderColor} rounded-md`}>
+              <Input className={`border ${inputBorderColor} rounded-md ${!!errors.dateOfBirth ? 'border-red-500' : ''}`}>
                 <InputField
                   placeholder="MM/DD/YYYY"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
-                  keyboardType="numbers-and-punctuation"
                   className={`${textColor} ${inputBgColor}`}
                   placeholderTextColor={isDark ? "#aaa" : "#777"}
                 />
@@ -211,20 +195,16 @@ export default function RegisterScreen() {
             name="dateOfBirth"
           />
           {errors.dateOfBirth ? (
-            <FormControl.Error>
-              <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.dateOfBirth.message}</Text>
-            </FormControl.Error>
+            <Text className={isDark ? 'text-red-400' : 'text-red-500 mt-1 text-sm'}>{errors.dateOfBirth.message}</Text>
           ) : null}
-        </FormControl>
+        </Box>
 
-        <FormControl isInvalid={!!errors.password} className="mb-4">
-          <FormControl.Label>
-            <Text className={`font-medium mb-1 ${textColor}`}>Password</Text>
-          </FormControl.Label>
+        <Box className="mb-4">
+          <Text className={`font-medium mb-1 ${textColor}`}>Password</Text>
           <Controller
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
-              <Input className={`border ${inputBorderColor} rounded-md`}>
+              <Input className={`border ${inputBorderColor} rounded-md ${!!errors.password ? 'border-red-500' : ''}`}>
                 <InputField
                   placeholder="Create a password"
                   onBlur={onBlur}
@@ -239,20 +219,16 @@ export default function RegisterScreen() {
             name="password"
           />
           {errors.password ? (
-            <FormControl.Error>
-              <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.password.message}</Text>
-            </FormControl.Error>
+            <Text className={isDark ? 'text-red-400' : 'text-red-500 mt-1 text-sm'}>{errors.password.message}</Text>
           ) : null}
-        </FormControl>
+        </Box>
 
-        <FormControl isInvalid={!!errors.confirmPassword} className="mb-6">
-          <FormControl.Label>
-            <Text className={`font-medium mb-1 ${textColor}`}>Confirm Password</Text>
-          </FormControl.Label>
+        <Box className="mb-6">
+          <Text className={`font-medium mb-1 ${textColor}`}>Confirm Password</Text>
           <Controller
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
-              <Input className={`border ${inputBorderColor} rounded-md`}>
+              <Input className={`border ${inputBorderColor} rounded-md ${!!errors.confirmPassword ? 'border-red-500' : ''}`}>
                 <InputField
                   placeholder="Confirm your password"
                   onBlur={onBlur}
@@ -267,11 +243,9 @@ export default function RegisterScreen() {
             name="confirmPassword"
           />
           {errors.confirmPassword ? (
-            <FormControl.Error>
-              <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.confirmPassword.message}</Text>
-            </FormControl.Error>
+            <Text className={isDark ? 'text-red-400' : 'text-red-500 mt-1 text-sm'}>{errors.confirmPassword.message}</Text>
           ) : null}
-        </FormControl>
+        </Box>
 
         <Button
           onPress={handleSubmit(onSubmit)}

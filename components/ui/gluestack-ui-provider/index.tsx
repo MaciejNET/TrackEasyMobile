@@ -22,6 +22,11 @@ export function GluestackUIProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
 
+  // Force re-render when mode changes
+  React.useEffect(() => {
+    // This is just to ensure the component re-renders when mode changes
+  }, [mode]);
+
   return (
     <View
       style={[

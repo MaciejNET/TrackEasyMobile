@@ -1,7 +1,8 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import baseApi from '@/services/baseApi';
+import searchApi from '@/services/searchApi';
 import {
     connectionsResponseSchema,
+    fallbackConnectionsResponseSchema,
     ConnectionsResponse,
 } from '@/schemas/connection';
 
@@ -11,8 +12,8 @@ interface QueryParams {
     departureTime: string;
 }
 
-export const useConnectionsQuery = (params: QueryParams) =>
-    useInfiniteQuery<
+export const useConnectionsQuery = (params: QueryParams) => {
+    return useInfiniteQuery<
         ConnectionsResponse,
         Error,
         ConnectionsResponse,
@@ -21,22 +22,44 @@ export const useConnectionsQuery = (params: QueryParams) =>
     >({
         queryKey: ['connections', params],
         queryFn: async ({ pageParam }) => {
-            const res = await baseApi.get('/connections', {
-                params: {
-                    ...params,
-                    departureTime: pageParam,
-                },
-            });
+            try {
+                const res = await searchApi.get('/connections', {
+                    params: {
+                        ...params,
+                        departureTime: pageParam,
+                    },
+                    timeout: 30000, // 30 seconds timeout
+                });
 
-            const parsed = connectionsResponseSchema.safeParse(res.data);
-            if (!parsed.success) throw new Error('Invalid connections data');
-            return parsed.data;
+                try {
+                    // Try with the strict schema first
+                    const parsed = connectionsResponseSchema.safeParse(res.data);
+                    if (parsed.success) {
+                        return parsed.data;
+                    }
+
+                    // Try with the fallback schema
+                    const fallbackParsed = fallbackConnectionsResponseSchema.safeParse(res.data);
+                    if (fallbackParsed.success) {
+                        return fallbackParsed.data as ConnectionsResponse;
+                    }
+
+                    // If both schemas fail, throw an error
+                    throw new Error(`Invalid connections data: ${parsed.error.message}`);
+                } catch (validationError) {
+                    throw validationError;
+                }
+            } catch (error) {
+                throw error;
+            }
         },
-        initialPageParam: params.departureTime, // 🔥 TO BYŁO WYMAGANE
-        getNextPageParam: (lastPage) =>
-            lastPage.hasNextPage ? lastPage.nextCursor : undefined,
+        initialPageParam: params.departureTime,
+        getNextPageParam: (lastPage) => {
+            return lastPage.hasNextPage ? lastPage.nextCursor : undefined;
+        },
         enabled:
             !!params.startStationId &&
             !!params.endStationId &&
             !!params.departureTime,
     });
+};

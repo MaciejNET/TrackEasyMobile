@@ -12,6 +12,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (firstName: string, lastName: string, email: string, password: string, dateOfBirth: string) => Promise<void>;
+  externalLogin: (provider: 'google' | 'microsoft', firstName: string, lastName: string, dateOfBirth: string) => Promise<void>;
+  handleExternalLoginCallback: (provider: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -143,6 +145,56 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  // External login function
+  const externalLogin = async (provider: 'google' | 'microsoft', firstName: string, lastName: string, dateOfBirth: string) => {
+    setIsLoading(true);
+    try {
+      // Initiate external login - this will redirect to the external provider
+      await authApi.externalLogin({
+        provider,
+        firstName,
+        lastName,
+        dateOfBirth,
+      });
+
+      // The user will be redirected to the external provider for authentication
+      // After authentication, they will be redirected back to our app
+      // We'll handle the callback in a separate component
+
+      // For now, we'll just return without setting the token
+      // In a real app, we would handle the redirect and callback
+    } catch (error) {
+      console.error('External login failed:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle external login callback
+  const handleExternalLoginCallback = async (provider: string) => {
+    setIsLoading(true);
+    try {
+      // Handle the callback from the external provider
+      const authToken = await authApi.handleExternalLoginCallback(provider);
+
+      // Save token to secure storage
+      await SecureStore.setItemAsync(TOKEN_KEY, authToken);
+
+      // Set token in state and axios defaults
+      setToken(authToken);
+      setAuthToken(authToken);
+
+      // Fetch user data
+      await fetchUserData(authToken);
+    } catch (error) {
+      console.error('External login callback failed:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Provide the auth context
   return (
     <AuthContext.Provider
@@ -153,6 +205,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isAuthenticated: !!user && !!token,
         login,
         register,
+        externalLogin,
+        handleExternalLoginCallback,
         logout,
         refreshUser,
       }}

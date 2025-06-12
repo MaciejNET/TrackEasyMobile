@@ -1,5 +1,34 @@
 import { z } from 'zod';
 
+// External login schema
+export const externalLoginSchema = z.object({
+  provider: z.enum(['google', 'microsoft']),
+  firstName: z.string().min(1, { message: 'First name is required' }),
+  lastName: z.string().min(1, { message: 'Last name is required' }),
+  dateOfBirth: z.string()
+    .min(1, { message: 'Date of birth is required' })
+    .refine((value) => {
+      // Allow any input in the form, it will be formatted before submission
+      return true;
+    }, {
+      message: 'Date of birth is required'
+    }),
+});
+
+export type ExternalLoginData = z.infer<typeof externalLoginSchema>;
+
+// External login command schema
+export const externalLoginCommandSchema = z.object({
+  provider: z.enum(['google', 'microsoft']),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { 
+    message: 'Date must be in YYYY-MM-DD format' 
+  }),
+});
+
+export type ExternalLoginCommand = z.infer<typeof externalLoginCommandSchema>;
+
 // Login form schema
 export const loginSchema = z.object({
   email: z.string()
