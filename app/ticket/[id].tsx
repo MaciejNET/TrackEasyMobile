@@ -20,9 +20,12 @@ import ticketApi from "@/services/ticket";
 import { useColorMode } from "@/hooks/useColorMode";
 import { TicketDetails, QrCode, RefundRequest } from "@/schemas/ticket";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useCurrentTicket } from "@/hooks/useCurrentTicket";
 
 export default function TicketDetailsScreen() {
-    const { id } = useLocalSearchParams<{ id: string }>();
+    const { id, tab } = useLocalSearchParams<{ id: string, tab?: string }>();
+    // Check if the ticket is from the current tab
+    const isCurrentTab = tab === "current";
     const router = useRouter();
     const { user } = useAuth();
     const { colorMode } = useColorMode();
@@ -35,6 +38,9 @@ export default function TicketDetailsScreen() {
     const [refundReason, setRefundReason] = useState("");
     const [showRefundForm, setShowRefundForm] = useState(false);
 
+    // Get current ticket ID
+    const { currentTicketId } = useCurrentTicket();
+
     // Fetch ticket details
     const {
         data: ticketDetails,
@@ -45,6 +51,21 @@ export default function TicketDetailsScreen() {
         queryFn: () => ticketApi.getTicketDetails(id),
         enabled: !!id,
     });
+
+    // Debug current ticket ID
+    useEffect(() => {
+        if (ticketDetails) {
+            console.log('Current Ticket ID:', currentTicketId);
+            console.log('Current Ticket ID type:', typeof currentTicketId);
+            console.log('Ticket Details ID:', ticketDetails.id);
+            console.log('Ticket Details ID type:', typeof ticketDetails.id);
+            console.log('Are they equal?', String(currentTicketId).toLowerCase() === String(ticketDetails.id).toLowerCase());
+            console.log('Is currentTicketId null?', currentTicketId === null);
+            console.log('Is currentTicketId undefined?', currentTicketId === undefined);
+            console.log('Showing Cancel button?', currentTicketId && ticketDetails && String(currentTicketId).toLowerCase() === String(ticketDetails.id).toLowerCase());
+            console.log('Showing Refund button?', ticketDetails && currentTicketId !== null && String(currentTicketId).toLowerCase() !== String(ticketDetails.id).toLowerCase());
+        }
+    }, [currentTicketId, ticketDetails]);
 
     // Fetch QR code if available
     const {
@@ -66,19 +87,29 @@ export default function TicketDetailsScreen() {
     const handleRefundRequest = async () => {
         if (!ticketDetails || !user) return;
 
+        // Check if the ticket status is PAID before proceeding
+        if (ticketDetails.status !== "PAID") {
+            console.error("Cannot request refund for non-PAID tickets");
+            alert("Refund is only available for PAID tickets");
+            setShowRefundForm(false);
+            return;
+        }
+
         try {
             const refundData: RefundRequest = {
                 userId: user.id,
                 ticketId: ticketDetails.id,
-                reason: refundReason.trim() || "No reason provided"
+                reason: refundReason.trim() || "No reason provided",
+                email: user.email
             };
 
-            await ticketApi.requestRefund(refundData);
+            await ticketApi.requestRefund(refundData, ticketDetails.status);
             setShowRefundForm(false);
             setRefundReason("");
             refetchDetails();
         } catch (error) {
             console.error("Failed to request refund:", error);
+            alert("Failed to request refund. Please try again later.");
         }
     };
 
@@ -93,7 +124,7 @@ export default function TicketDetailsScreen() {
 
     if (detailsLoading) {
         return (
-            <Center flex={1}>
+            <Center className="flex-1">
                 <Spinner size="large" />
             </Center>
         );
@@ -101,7 +132,7 @@ export default function TicketDetailsScreen() {
 
     if (!ticketDetails) {
         return (
-            <Center flex={1} className={bgColor}>
+            <Center className={`flex-1 ${bgColor}`}>
                 <Text className={`text-lg ${textColor}`}>Ticket not found</Text>
                 <Button 
                     className={`mt-4 ${isDark ? "bg-blue-700" : "bg-blue-600"}`}
@@ -124,7 +155,7 @@ export default function TicketDetailsScreen() {
                     <Text className={`${textColor}`}>← Back</Text>
                 </Button>
                 <Heading className={`${textColor}`}>Ticket Details</Heading>
-                <Box width={50} /> {/* Empty box for alignment */}
+                <Box className="w-[50px]" /> {/* Empty box for alignment */}
             </HStack>
 
             {showRefundForm ? (
@@ -206,35 +237,45 @@ export default function TicketDetailsScreen() {
                             <Text className={textColor}>{ticketDetails.seatNumbers ? ticketDetails.seatNumbers.join(', ') : 'No seat numbers'}</Text>
                         </Box>
 
-                        {qrCode && (
+                        {qrCode && ticketDetails.status === "PAID" ? (
                             <Box className="items-center">
                                 <Text className={`font-bold mb-2 ${textColor}`}>QR Code</Text>
                                 <Image
                                     source={{ uri: qrCode }}
-                                    alt="QR Code"
+                                    accessibilityLabel="QR Code"
                                     width={200}
                                     height={200}
                                     className="rounded-md"
                                 />
                             </Box>
-                        )}
+                        ) : null}
 
                         <Box className="mt-4 mb-8">
-                            {!isJourneyStarted(ticketDetails) ? (
+                            {/* Cancel button - show only for current tab tickets */}
+                            {isCurrentTab ? (
                                 <Button
-                                    className={`w-full ${isDark ? "bg-red-700" : "bg-red-600"}`}
+                                    className={`w-full mb-2 ${isDark ? "bg-red-700" : "bg-red-600"}`}
                                     onPress={() => router.push(`/ticket/cancel?id=${ticketDetails.id}`)}
                                 >
                                     <Text className="text-white">Cancel Ticket</Text>
                                 </Button>
-                            ) : (
+                            ) : null}
+
+                            {/* Refund button - show only for archive tab tickets with PAID status */}
+                            {!isCurrentTab && ticketDetails.status === "PAID" ? (
                                 <Button
                                     className={`w-full ${isDark ? "bg-blue-700" : "bg-blue-600"}`}
                                     onPress={() => setShowRefundForm(true)}
                                 >
                                     <Text className="text-white">Refund Request</Text>
                                 </Button>
-                            )}
+                            ) : !isCurrentTab && ticketDetails.status === "CANCELLED" ? (
+                                <Box className="p-3 rounded-lg bg-yellow-100 dark:bg-yellow-900">
+                                    <Text className={`text-center ${isDark ? "text-yellow-200" : "text-yellow-800"}`}>
+                                        Refund is not available for cancelled tickets
+                                    </Text>
+                                </Box>
+                            ) : null}
                         </Box>
                     </VStack>
                 </ScrollView>

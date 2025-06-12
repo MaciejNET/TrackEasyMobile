@@ -44,16 +44,16 @@ export default function CancelTicketScreen() {
                     <Text className={`${textColor}`}>← Back</Text>
                 </Button>
                 <Heading className={`${textColor}`}>Confirm Cancellation</Heading>
-                <Box width={50} /> {/* Empty box for alignment */}
+                <Box className="w-[50px]" /> {/* Empty box for alignment */}
             </HStack>
 
-            <Center flex={1}>
-                <VStack space={4} alignItems="center">
+            <Center className="flex-1">
+                <VStack className="space-y-4 items-center">
                     <Text className={`text-lg text-center ${textColor}`}>
                         Are you sure you want to cancel this ticket?
                     </Text>
 
-                    <HStack space={4} mt={8}>
+                    <HStack className="space-x-4 mt-8">
                         <Button
                             className={isDark ? "bg-gray-700" : "bg-gray-300"}
                             onPress={() => router.back()}

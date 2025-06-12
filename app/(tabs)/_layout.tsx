@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import { useColorMode } from "@/hooks/useColorMode";
 import { Ionicons } from "@expo/vector-icons";
+import { Text } from "@/components/ui/text";
 
 export default function TabsLayout() {
   const { colorMode } = useColorMode();
@@ -20,7 +21,10 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Tickets",
+          headerTitle: () => <Text>Tickets</Text>,
+          tabBarLabel: ({ color }) => (
+            <Text style={{ color }}>Tickets</Text>
+          ),
           tabBarIcon: ({ color }) => (
             <Ionicons name="ticket-outline" size={24} color={color} />
           ),
@@ -29,7 +33,10 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="fun-facts"
         options={{
-          title: "Fun Facts",
+          headerTitle: () => <Text>Fun Facts</Text>,
+          tabBarLabel: ({ color }) => (
+            <Text style={{ color }}>Fun Facts</Text>
+          ),
           tabBarIcon: ({ color }) => (
             <Ionicons name="help-circle-outline" size={24} color={color} />
           ),
@@ -38,7 +45,10 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: "Search",
+          headerTitle: () => <Text>Search</Text>,
+          tabBarLabel: ({ color }) => (
+            <Text style={{ color }}>Search</Text>
+          ),
           tabBarIcon: ({ color }) => (
             <Ionicons name="search-outline" size={24} color={color} />
           ),
@@ -47,7 +57,10 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="account"
         options={{
-          title: "Account",
+          headerTitle: () => <Text>Account</Text>,
+          tabBarLabel: ({ color }) => (
+            <Text style={{ color }}>Account</Text>
+          ),
           tabBarIcon: ({ color }) => (
             <Ionicons name="person-outline" size={24} color={color} />
           ),

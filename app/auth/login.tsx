@@ -71,11 +71,11 @@ export default function LoginScreen() {
         <Text className={`text-center ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>Sign in to your account</Text>
       </Box>
 
-      {error && (
+      {error ? (
         <Box className={`mb-4 p-3 ${isDark ? 'bg-red-900' : 'bg-red-100'} rounded-md`}>
           <Text className={isDark ? 'text-white' : 'text-red-700'}>{error}</Text>
         </Box>
-      )}
+      ) : null}
 
       <FormControl isInvalid={!!errors.email} className="mb-4">
         <FormControl.Label>
@@ -99,11 +99,11 @@ export default function LoginScreen() {
           )}
           name="email"
         />
-        {errors.email && (
+        {errors.email ? (
           <FormControl.Error>
             <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.email.message}</Text>
           </FormControl.Error>
-        )}
+        ) : null}
       </FormControl>
 
       <FormControl isInvalid={!!errors.password} className="mb-6">
@@ -127,11 +127,11 @@ export default function LoginScreen() {
           )}
           name="password"
         />
-        {errors.password && (
+        {errors.password ? (
           <FormControl.Error>
             <Text className={isDark ? 'text-red-400' : 'text-red-500'}>{errors.password.message}</Text>
           </FormControl.Error>
-        )}
+        ) : null}
       </FormControl>
 
       <Button
