@@ -22,7 +22,7 @@ type City = {
     sequenceNumber: number;
 };
 
-export default function FunFactsScreen() {
+export default function TriviaScreen() {
     const user = useUser();
     const currentTicketId = useCurrentTicket();
     const router = useRouter();
