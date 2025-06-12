@@ -1,21 +1,16 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-// Token storage key
 const TOKEN_KEY = 'auth_token';
 
-// Base API configuration
 const API_URL = 'http://localhost:5222';
 
-// Create axios instance
 const baseApi = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
-// Add a request interceptor to automatically add the bearer token to headers
 baseApi.interceptors.request.use(
   async (config) => {
     try {
@@ -33,7 +28,6 @@ baseApi.interceptors.request.use(
   }
 );
 
-// Function to set auth token for all future requests (for backward compatibility)
 export const setAuthToken = (token: string | null) => {
   if (token) {
     baseApi.defaults.headers.common['Authorization'] = `Bearer ${token}`;

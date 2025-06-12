@@ -8,9 +8,7 @@ import {
   TicketArrival
 } from '@/schemas/city';
 
-// City API functions
 const cityApi = {
-  // Get cities for a ticket
   getTicketCities: async (ticketId: string): Promise<TicketCity[]> => {
     try {
       const response = await baseApi.get(`/tickets/${ticketId}/cities`);
@@ -28,12 +26,9 @@ const cityApi = {
     }
   },
 
-  // Get city details
   getCityDetails: async (cityId: string): Promise<CityDetails> => {
     try {
       const response = await baseApi.get(`/cities/${cityId}`);
-
-      // Convert country.id from number to string if needed
       const data = response.data;
       if (data && data.country && typeof data.country.id === 'number') {
         data.country.id = String(data.country.id);
@@ -53,7 +48,6 @@ const cityApi = {
     }
   },
 
-  // Get ticket arrival times
   getTicketArrivals: async (ticketId: string): Promise<TicketArrival[]> => {
     try {
       const response = await baseApi.get(`/tickets/${ticketId}/arrivals`);

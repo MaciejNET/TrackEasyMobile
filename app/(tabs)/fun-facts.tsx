@@ -28,7 +28,6 @@ export default function TriviaScreen() {
     const [isSettingNotifications, setIsSettingNotifications] = useState(false);
     const [notificationsSet, setNotificationsSet] = useState(false);
 
-    // Fetch current ticket directly
     const { data: currentTicketId, isLoading: isLoadingTicket } = useQuery({
         queryKey: ['currentTicket'],
         queryFn: async () => {
@@ -36,19 +35,16 @@ export default function TriviaScreen() {
             return await ticketApi.getCurrentTicket();
         },
         enabled: !!token && isAuthenticated,
-        refetchOnMount: true, // Always refetch when component mounts
+        refetchOnMount: true,
     });
 
-    // Function to set up notifications for ticket arrivals
     const setupNotifications = async () => {
         if (!currentTicketId) return;
 
         setIsSettingNotifications(true);
         try {
-            // Fetch ticket arrival times
             const arrivals = await cityApi.getTicketArrivals(currentTicketId);
 
-            // Schedule notifications for arrivals
             const result = await notificationService.scheduleArrivalNotifications(arrivals);
 
             if (result.success) {
