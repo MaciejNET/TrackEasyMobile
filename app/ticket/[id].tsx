@@ -113,22 +113,6 @@ export default function TicketDetailsScreen() {
         enabled: !!id,
     });
 
-    // Debug current ticket ID
-    useEffect(() => {
-        if (ticketDetails) {
-            console.log('Current Ticket ID:', currentTicketId);
-            console.log('Current Ticket ID type:', typeof currentTicketId);
-            console.log('Ticket Details ID:', ticketDetails.id);
-            console.log('Ticket Details ID type:', typeof ticketDetails.id);
-            console.log('Are they equal?', String(currentTicketId).toLowerCase() === String(ticketDetails.id).toLowerCase());
-            console.log('Is currentTicketId null?', currentTicketId === null);
-            console.log('Is currentTicketId undefined?', currentTicketId === undefined);
-            console.log('Showing Cancel button?', currentTicketId && ticketDetails && String(currentTicketId).toLowerCase() === String(ticketDetails.id).toLowerCase());
-            console.log('Showing Refund button?', ticketDetails && currentTicketId !== null && String(currentTicketId).toLowerCase() !== String(ticketDetails.id).toLowerCase());
-        }
-    }, [currentTicketId, ticketDetails]);
-
-    // Fetch QR code if available
     const {
         data: qrCode,
         isLoading: qrLoading,
@@ -209,6 +193,12 @@ export default function TicketDetailsScreen() {
         );
     }
 
+    const sortedStations = [...ticketDetails.stations].sort(
+      (a, b) => a.sequenceNumber - b.sequenceNumber
+    );
+    const fromStation = sortedStations[0];
+    const toStation = sortedStations[sortedStations.length - 1];
+
     return (
         <Box className={`flex-1 p-4 ${bgColor}`} key={colorModeKey}>
             <HStack className="justify-between items-center mb-4">
@@ -257,8 +247,8 @@ export default function TicketDetailsScreen() {
                     <VStack className="space-y-4">
                         <Box className={`p-3 rounded-lg ${cardBgColor}`}>
                             <Text className={`font-bold ${textColor}`}>Journey</Text>
-                            <Text className={textColor}>From: {ticketDetails.stations[0]?.name}</Text>
-                            <Text className={textColor}>To: {ticketDetails.stations[ticketDetails.stations.length - 1]?.name}</Text>
+                            <Text className={textColor}>From: {fromStation.name}</Text>
+                            <Text className={textColor}>To: {toStation.name}</Text>
                             <Text className={textColor}>Date: {formatDate(ticketDetails.connectionDate)}</Text>
                             <Text className={textColor}>Departure: {formatTime(ticketDetails.departureTime)}</Text>
                             <Text className={textColor}>Arrival: {formatTime(ticketDetails.arrivalTime)}</Text>

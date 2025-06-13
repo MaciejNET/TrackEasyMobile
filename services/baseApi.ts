@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 
 const TOKEN_KEY = 'auth_token';
 
-const API_URL = 'http://localhost:5222';
+const API_URL = 'https://trackeasy-api-axaaadhhapfvg8cx.polandcentral-01.azurewebsites.net';
 
 const baseApi = axios.create({
   baseURL: API_URL,

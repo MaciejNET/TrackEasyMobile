@@ -13,7 +13,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Station } from "@/schemas/ticket";
 
 // Format time only (HH:MM)
-const formatTime = (timeString: string): string => {
+const formatTime = (timeString: string | null): string => {
     if (!timeString) return 'N/A';
 
     try {
@@ -51,7 +51,10 @@ export default function StationsScreen() {
 
     // Parse the stations from the URL parameter
     const parsedStations: Station[] = stationsParam ? JSON.parse(stationsParam) : [];
-
+    const sortedStations = parsedStations.sort(
+      (a, b) => a.sequenceNumber - b.sequenceNumber
+    );
+    
     return (
         <Box className={`flex-1 p-4 ${bgColor}`}>
             <HStack className="justify-between items-center mb-4">
@@ -72,7 +75,7 @@ export default function StationsScreen() {
                 </Center>
             ) : (
                 <ScrollView className="flex-1">
-                    {parsedStations.map((station, index) => (
+                    {sortedStations.map((station, index) => (
                         <Box key={index} className={`p-3 mb-2 rounded-lg ${cardBgColor}`}>
                             <Text className={`font-bold ${textColor}`}>{station.name}</Text>
                             <HStack className="justify-between mt-1">
