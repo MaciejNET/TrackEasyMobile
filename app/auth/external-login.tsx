@@ -24,7 +24,7 @@ export default function ExternalLoginScreen() {
   const [authUrl, setAuthUrl] = useState<string | null>(null);
   const { colorMode } = useColorMode();
 
-  // Define theme-based styles
+  
   const isDark = colorMode === "dark";
   const textColor = isDark ? "text-white" : "text-black";
   const buttonBgColor = isDark ? "bg-white" : "bg-black";
@@ -49,15 +49,15 @@ export default function ExternalLoginScreen() {
     try {
       console.log('Submitting external login form with data:', JSON.stringify(data));
 
-      // Format date to YYYY-MM-DD
+      
       let formattedDate = formatDateString(data.dateOfBirth);
       console.log('Formatted date:', formattedDate);
 
-      // Additional validation for date format
+      
       if (!formattedDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
         console.error('Date is not in YYYY-MM-DD format after formatting:', formattedDate);
 
-        // Try to parse as a Date object as a fallback
+        
         try {
           const date = new Date(formattedDate);
           if (!isNaN(date.getTime())) {
@@ -75,7 +75,7 @@ export default function ExternalLoginScreen() {
         }
       }
 
-      // Call authApi.externalLogin directly to get the URL
+      
       const url = await authApi.externalLogin({
         provider: data.provider,
         firstName: data.firstName,
@@ -85,12 +85,12 @@ export default function ExternalLoginScreen() {
 
       console.log('Received authentication URL:', url);
 
-      // Set the URL in state to trigger rendering the WebView
+      
       setAuthUrl(url);
     } catch (err: any) {
       console.error('Error in external login submission:', err);
 
-      // Provide more user-friendly error messages based on the error
+      
       if (err.message.includes('Date must be in YYYY-MM-DD format')) {
         setError('Please enter the date in MM/DD/YYYY format.');
       } else if (err.message.includes('Invalid date format')) {
@@ -109,23 +109,23 @@ export default function ExternalLoginScreen() {
     }
   };
 
-  // Helper function to format date string to YYYY-MM-DD
+  
   const formatDateString = (dateString: string): string => {
     console.log('Formatting date string:', dateString);
 
-    // If already in YYYY-MM-DD format, return as is
+    
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
       console.log('Date is already in YYYY-MM-DD format');
       return dateString;
     }
 
-    // Try MM/DD/YYYY format (with or without leading zeros)
+    
     const mmddyyyyRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
     if (mmddyyyyRegex.test(dateString)) {
       const match = dateString.match(mmddyyyyRegex);
       if (match) {
         const [_, month, day, year] = match;
-        // Ensure month and day are valid
+        
         const monthNum = parseInt(month, 10);
         const dayNum = parseInt(day, 10);
 
@@ -139,13 +139,13 @@ export default function ExternalLoginScreen() {
       }
     }
 
-    // Try DD/MM/YYYY format (with or without leading zeros)
+    
     const ddmmyyyyRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
     if (ddmmyyyyRegex.test(dateString)) {
       const match = dateString.match(ddmmyyyyRegex);
       if (match) {
         const [_, day, month, year] = match;
-        // Ensure month and day are valid
+        
         const monthNum = parseInt(month, 10);
         const dayNum = parseInt(day, 10);
 
@@ -159,13 +159,13 @@ export default function ExternalLoginScreen() {
       }
     }
 
-    // Try MM-DD-YYYY format
+    
     const mmddyyyyDashRegex = /^(\d{1,2})-(\d{1,2})-(\d{4})$/;
     if (mmddyyyyDashRegex.test(dateString)) {
       const match = dateString.match(mmddyyyyDashRegex);
       if (match) {
         const [_, month, day, year] = match;
-        // Ensure month and day are valid
+        
         const monthNum = parseInt(month, 10);
         const dayNum = parseInt(day, 10);
 
@@ -179,7 +179,7 @@ export default function ExternalLoginScreen() {
       }
     }
 
-    // Try YYYY-MM-DD format with different separators
+    
     const yyyymmddRegex = /^(\d{4})[\/\.\-](\d{1,2})[\/\.\-](\d{1,2})$/;
     if (yyyymmddRegex.test(dateString)) {
       const match = dateString.match(yyyymmddRegex);
@@ -191,7 +191,7 @@ export default function ExternalLoginScreen() {
       }
     }
 
-    // Try to parse as a Date object
+    
     try {
       const date = new Date(dateString);
       if (!isNaN(date.getTime())) {
@@ -206,7 +206,7 @@ export default function ExternalLoginScreen() {
       console.error('Error parsing date as Date object:', error);
     }
 
-    // If all else fails, return the original string
+    
     console.warn('Could not format date, returning original:', dateString);
     return dateString;
   };
@@ -216,13 +216,13 @@ export default function ExternalLoginScreen() {
     (isDark ? 'bg-red-600' : 'bg-red-500') : 
     (isDark ? 'bg-blue-700' : 'bg-blue-600');
 
-  // Handle canceling the WebView authentication
+  
   const handleCancel = () => {
     setAuthUrl(null);
     setError(null);
   };
 
-  // If we have an auth URL, show the WebView
+  
   if (authUrl) {
     return (
       <WebViewAuth

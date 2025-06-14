@@ -23,11 +23,11 @@ export default function CancelTicketScreen() {
 
         try {
             await ticketApi.cancelTicket(id);
-            // Navigate back to the tickets list
+            
             router.push("/(tabs)");
         } catch (error) {
             console.error("Failed to cancel ticket:", error);
-            // Stay on the page if there's an error
+            
         }
     };
 
@@ -42,7 +42,7 @@ export default function CancelTicketScreen() {
                     <Text className={`${textColor}`}>← Back</Text>
                 </Button>
                 <Heading className={`${textColor}`}>Confirm Cancellation</Heading>
-                <Box className="w-[50px]" /> {/* Empty box for alignment */}
+                <Box className="w-[50px]" /> {}
             </HStack>
 
             <Center className="flex-1">

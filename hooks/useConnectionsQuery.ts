@@ -28,23 +28,23 @@ export const useConnectionsQuery = (params: QueryParams) => {
                         ...params,
                         departureTime: pageParam,
                     },
-                    timeout: 30000, // 30 seconds timeout
+                    timeout: 30000, 
                 });
 
                 try {
-                    // Try with the strict schema first
+                    
                     const parsed = connectionsResponseSchema.safeParse(res.data);
                     if (parsed.success) {
                         return parsed.data;
                     }
 
-                    // Try with the fallback schema
+                    
                     const fallbackParsed = fallbackConnectionsResponseSchema.safeParse(res.data);
                     if (fallbackParsed.success) {
                         return fallbackParsed.data as ConnectionsResponse;
                     }
 
-                    // If both schemas fail, throw an error
+                    
                     throw new Error(`Invalid connections data: ${parsed.error.message}`);
                 } catch (validationError) {
                     throw validationError;

@@ -64,7 +64,7 @@ export default function CityDetailsScreen() {
           <Text className={textColor}>← Back</Text>
         </Button>
         <Heading className={textColor}>{data.name}</Heading>
-        <Box className="w-[50px]" /> {/* Empty box for alignment */}
+        <Box className="w-[50px]" /> {}
       </HStack>
 
       <Box className={`p-4 rounded-lg mb-4 ${cardBgColor}`}>

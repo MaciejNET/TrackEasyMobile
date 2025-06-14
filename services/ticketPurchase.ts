@@ -14,14 +14,14 @@ import {
   TicketPriceResponse
 } from '@/schemas/ticket-purchase';
 
-// Ticket Purchase API functions
+
 const ticketPurchaseApi = {
-  // Get list of available discounts
+  
   getDiscounts: async (): Promise<Discount[]> => {
     try {
       const response = await searchApi.get('/system-lists/discounts');
 
-      // Parse response with Zod schema
+      
       const discounts = z.array(discountSchema).safeParse(response.data);
       if (!discounts.success) {
         console.error('Invalid discounts data:', discounts.error);
@@ -35,12 +35,12 @@ const ticketPurchaseApi = {
     }
   },
 
-  // Validate discount code
+  
   validateDiscountCode: async (code: string): Promise<DiscountCode> => {
     try {
       const response = await searchApi.get(`/discount-codes/${code}`);
 
-      // Parse response with Zod schema
+      
       const discountCode = discountCodeSchema.safeParse(response.data);
       if (!discountCode.success) {
         console.error('Invalid discount code data:', discountCode.error);
@@ -54,7 +54,7 @@ const ticketPurchaseApi = {
     }
   },
 
-  // Map numeric currency code to string
+  
   mapCurrencyCodeToString: (code: number): 'PLN' | 'EUR' | 'USD' => {
     switch (code) {
       case 0:
@@ -64,11 +64,11 @@ const ticketPurchaseApi = {
       case 2:
         return 'USD';
       default:
-        return 'PLN'; // Default to PLN if code is unknown
+        return 'PLN'; 
     }
   },
 
-  // Map string currency to numeric code
+  
   mapStringToCurrencyCode: (currency: 'PLN' | 'EUR' | 'USD'): number => {
     switch (currency) {
       case 'PLN':
@@ -78,14 +78,14 @@ const ticketPurchaseApi = {
       case 'USD':
         return 2;
       default:
-        return 0; // Default to PLN if currency is unknown
+        return 0; 
     }
   },
 
-  // Calculate ticket price
+  
   calculatePrice: async (ticketData: BuyTicketCommand): Promise<TicketPriceResponse> => {
     try {
-      // Validate ticket data with Zod schema
+      
       const validationResult = buyTicketCommandSchema.safeParse(ticketData);
       if (!validationResult.success) {
         throw new Error(validationResult.error.errors[0]?.message || 'Invalid ticket data');
@@ -93,8 +93,8 @@ const ticketPurchaseApi = {
 
       const response = await baseApi.post('/tickets/price', ticketData);
 
-      // Preprocess the response data
-      // The API may return a MoneyDto with fields `amount` and `currency`
+      
+      
       const rawAmount =
         response.data.amount !== undefined
           ? response.data.amount
@@ -115,7 +115,7 @@ const ticketPurchaseApi = {
             : response.data.currency,
       };
 
-      // Parse response with Zod schema
+      
       const ticketPrice = ticketPriceResponseSchema.safeParse(preprocessedData);
       if (!ticketPrice.success) {
         console.error('Invalid ticket price data:', ticketPrice.error);
@@ -129,10 +129,10 @@ const ticketPurchaseApi = {
     }
   },
 
-  // Buy ticket
+  
   buyTicket: async (ticketData: BuyTicketCommand): Promise<string[]> => {
     try {
-      // Validate ticket data with Zod schema
+      
       const validationResult = buyTicketCommandSchema.safeParse(ticketData);
       if (!validationResult.success) {
         throw new Error(validationResult.error.errors[0]?.message || 'Invalid ticket data');
@@ -140,7 +140,7 @@ const ticketPurchaseApi = {
 
       const response = await baseApi.post('/tickets', ticketData);
 
-      // Parse response as array of ticket IDs
+      
       const ticketIds = z.array(z.string().uuid()).safeParse(response.data);
       if (!ticketIds.success) {
         console.error('Invalid ticket IDs:', ticketIds.error);
@@ -154,16 +154,16 @@ const ticketPurchaseApi = {
     }
   },
 
-  // Pay for ticket with card
+  
   payWithCard: async (paymentData: PayTicketByCardCommand): Promise<void> => {
     try {
-      // Validate payment data with Zod schema
+      
       const validationResult = payTicketByCardCommandSchema.safeParse(paymentData);
       if (!validationResult.success) {
         throw new Error(validationResult.error.errors[0]?.message || 'Invalid payment data');
       }
 
-      // Convert string currency to numeric code for backend
+      
       const modifiedPaymentData = {
         ...paymentData,
         currency: ticketPurchaseApi.mapStringToCurrencyCode(paymentData.currency)

@@ -17,55 +17,55 @@ import { useColorMode } from "@/hooks/useColorMode";
 import { TicketDetails, QrCode, RefundRequest } from "@/schemas/ticket";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-// Format time only (HH:MM)
+
 const formatTime = (timeString: string): string => {
     if (!timeString) return 'N/A';
 
     try {
-        // If it's just a time string (HH:MM:SS)
+        
         if (/^\d{2}:\d{2}(:\d{2})?$/.test(timeString)) {
-            // Return just HH:MM
+            
             return timeString.substring(0, 5);
         }
 
-        // Try to parse as date
+        
         const date = new Date(timeString);
 
-        // Check if date is valid
+        
         if (!isNaN(date.getTime())) {
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        // Return the original string if we can't parse it
+        
         return timeString;
     } catch (error) {
-        // If any error occurs, return the original string
+        
         return timeString;
     }
 };
 
-// Format date for display
+
 const formatDate = (dateString: string): string => {
     if (!dateString) return 'N/A';
 
     try {
-        // Try to parse the date
+        
         const date = new Date(dateString);
 
-        // Check if date is valid
+        
         if (!isNaN(date.getTime())) {
             return date.toLocaleDateString();
         }
 
-        // Return the original string if we can't parse it
+        
         return dateString;
     } catch (error) {
-        // If any error occurs, return the original string
+        
         return dateString;
     }
 };
 
-// Safely parse date for comparison
+
 const safeParseDate = (dateString: string): Date | null => {
     try {
         const date = new Date(dateString);
@@ -77,7 +77,7 @@ const safeParseDate = (dateString: string): Date | null => {
 
 export default function TicketDetailsScreen() {
     const { id, tab } = useLocalSearchParams<{ id: string, tab?: string }>();
-    // Check if the ticket is from the current tab
+    
     const isCurrentTab = tab === "current";
     const router = useRouter();
     const { user, token, isAuthenticated } = useAuth();
@@ -91,7 +91,7 @@ export default function TicketDetailsScreen() {
     const [refundReason, setRefundReason] = useState("");
     const [showRefundForm, setShowRefundForm] = useState(false);
 
-    // Get current ticket ID directly
+    
     const { data: currentTicketId, isLoading: isLoadingCurrentTicket } = useQuery({
         queryKey: ['currentTicket'],
         queryFn: async () => {
@@ -99,10 +99,10 @@ export default function TicketDetailsScreen() {
             return await ticketApi.getCurrentTicket();
         },
         enabled: !!token && isAuthenticated,
-        refetchOnMount: true, // Always refetch when component mounts
+        refetchOnMount: true, 
     });
 
-    // Fetch ticket details
+    
     const {
         data: ticketDetails,
         isLoading: detailsLoading,
@@ -132,7 +132,7 @@ export default function TicketDetailsScreen() {
     const handleRefundRequest = async () => {
         if (!ticketDetails || !user) return;
 
-        // Check if the ticket status is PAID before proceeding
+        
         if (ticketDetails.status !== "PAID") {
             console.error("Cannot request refund for non-PAID tickets");
             alert("Refund is only available for PAID tickets");
@@ -158,14 +158,14 @@ export default function TicketDetailsScreen() {
         }
     };
 
-    // Check if journey has started to determine which button to show
+    
     const isJourneyStarted = (ticket: TicketDetails): boolean => {
         if (!ticket) return false;
 
         const now = new Date();
         const departureTime = safeParseDate(ticket.departureTime);
 
-        // If we couldn't parse the departure time, assume journey hasn't started
+        
         if (!departureTime) return false;
 
         return now > departureTime;
@@ -210,7 +210,7 @@ export default function TicketDetailsScreen() {
                     <Text className={`${textColor}`}>← Back</Text>
                 </Button>
                 <Heading className={`${textColor}`}>Ticket Details</Heading>
-                <Box className="w-[50px]" /> {/* Empty box for alignment */}
+                <Box className="w-[50px]" /> {}
             </HStack>
 
             {showRefundForm ? (
@@ -255,7 +255,7 @@ export default function TicketDetailsScreen() {
                             <Button 
                                 className={`mt-2 ${isDark ? "bg-blue-700" : "bg-blue-600"}`}
                                 onPress={() => {
-                                    // Navigate to the stations screen with the stations data
+                                    
                                     const stationsJson = JSON.stringify(ticketDetails.stations);
                                     router.push({
                                         pathname: "/ticket/stations",
@@ -306,7 +306,6 @@ export default function TicketDetailsScreen() {
                         ) : null}
 
                         <Box className="mt-4 mb-8">
-                            {/* Cancel button - show only for current tab tickets */}
                             {isCurrentTab ? (
                                 <Button
                                     className={`w-full mb-2 ${isDark ? "bg-red-700" : "bg-red-600"}`}
@@ -316,7 +315,6 @@ export default function TicketDetailsScreen() {
                                 </Button>
                             ) : null}
 
-                            {/* Refund button - show only for archive tab tickets with PAID status */}
                             {!isCurrentTab && ticketDetails.status === "PAID" ? (
                                 <Button
                                     className={`w-full ${isDark ? "bg-blue-700" : "bg-blue-600"}`}

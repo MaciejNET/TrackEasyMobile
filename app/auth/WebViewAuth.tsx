@@ -21,22 +21,22 @@ export default function WebViewAuth({ url, provider, onCancel }: WebViewAuthProp
   const [error, setError] = useState<string | null>(null);
   const { colorMode } = useColorMode();
 
-  // Define theme-based styles
+  
   const isDark = colorMode === "dark";
   const textColor = isDark ? "text-white" : "text-black";
   const bgColor = isDark ? "bg-black" : "bg-white";
 
-  // Handle navigation state change
+  
   const handleNavigationStateChange = async (navState: any) => {
     console.log('WebView navigation state changed:', navState);
 
-    // Check if the URL contains the callback path
+    
     if (navState.url.includes('/users/external/' + provider + '/callback')) {
       console.log('Detected callback URL:', navState.url);
       setIsLoading(true);
 
       try {
-        // Call the handleExternalLoginCallback method
+        
         await handleExternalLoginCallback(provider);
         console.log('External login callback successful, redirecting to home');
         router.replace('/(tabs)');

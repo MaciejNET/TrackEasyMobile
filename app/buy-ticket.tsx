@@ -36,7 +36,7 @@ import {
   PersonDto
 } from '@/schemas/ticket-purchase';
 
-// Form data type
+
 type BuyTicketFormData = {
   email: string;
   passengers: {
@@ -67,18 +67,18 @@ export default function BuyTicketScreen() {
   const inputBgColor = isDark ? 'bg-gray-700' : 'bg-white';
   const borderColor = isDark ? 'border-gray-600' : 'border-gray-300';
 
-  // Parse connections from URL params
+  
   const connections: TicketConnectionDto[] = params.connections ? 
     JSON.parse(params.connections) : [];
 
-  // State for form
+  
   const [discountCodeId, setDiscountCodeId] = useState<string | null>(null);
   const [discountPercentage, setDiscountPercentage] = useState<number | null>(null);
   const [ticketIds, setTicketIds] = useState<string[]>([]);
   const [ticketPrice, setTicketPrice] = useState<number | null>(null);
   const [currency, setCurrency] = useState<'PLN' | 'EUR' | 'USD'>('PLN');
 
-  // Form validation and state
+  
   const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<BuyTicketFormData>({
     resolver: zodResolver(buyTicketCommandSchema.omit({ connections: true, discountCodeId: true }).extend({
       discountCode: z.string().optional(),
@@ -90,7 +90,7 @@ export default function BuyTicketScreen() {
         {
           firstName: user?.firstName || '',
           lastName: user?.lastName || '',
-          dateOfBirth: '', // Format: YYYY-MM-DD
+          dateOfBirth: '', 
           discountId: null,
         }
       ],
@@ -99,18 +99,18 @@ export default function BuyTicketScreen() {
     }
   });
 
-  // Watch form values
+  
   const paymentMethod = watch('paymentMethod');
   const discountCode = watch('discountCode');
   const passengers = watch('passengers');
 
-  // Fetch discounts
+  
   const { data: discounts, isLoading: isLoadingDiscounts } = useQuery({
     queryKey: ['discounts'],
     queryFn: ticketPurchaseApi.getDiscounts,
   });
 
-  // Validate discount code
+  
   const validateDiscountCode = async (code: string) => {
     if (!code) {
       setDiscountCodeId(null);
@@ -131,7 +131,7 @@ export default function BuyTicketScreen() {
     }
   };
 
-  // Add passenger
+  
   const addPassenger = () => {
     setValue('passengers', [
       ...passengers,
@@ -144,14 +144,14 @@ export default function BuyTicketScreen() {
     ]);
   };
 
-  // Remove passenger
+  
   const removePassenger = (index: number) => {
     if (passengers.length > 1) {
       setValue('passengers', passengers.filter((_, i) => i !== index));
     }
   };
 
-  // Calculate price mutation
+  
   const calculatePriceMutation = useMutation({
     mutationFn: (data: BuyTicketCommand) => ticketPurchaseApi.calculatePrice(data),
     onSuccess: (data) => {
@@ -164,7 +164,7 @@ export default function BuyTicketScreen() {
     }
   });
 
-  // Buy ticket mutation
+  
   const buyTicketMutation = useMutation({
     mutationFn: (data: BuyTicketCommand) => ticketPurchaseApi.buyTicket(data),
     onSuccess: (data) => {
@@ -176,7 +176,7 @@ export default function BuyTicketScreen() {
           [{ text: 'OK', onPress: () => router.push('/(tabs)') }]
         );
       } else {
-        // Redirect to payment screen with ticket IDs, price, and currency
+        
         router.push({
           pathname: '/payment',
           params: {
@@ -194,22 +194,22 @@ export default function BuyTicketScreen() {
   });
 
 
-  // Format date to YYYY-MM-DD
+  
   const formatToYYYYMMDD = (dateString: string): string => {
     if (!dateString) return '';
 
-    // If already in YYYY-MM-DD format, return as is
+    
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
       return dateString;
     }
 
-    // Try to parse the date
+    
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      // If parsing fails, try to handle common formats
+      
       const parts = dateString.split(/[-\/\.]/);
       if (parts.length === 3) {
-        // Assume MM/DD/YYYY or DD/MM/YYYY format
+        
         const year = parts[2].length === 4 ? parts[2] : `20${parts[2]}`;
         const month = parts[0].padStart(2, '0');
         const day = parts[1].padStart(2, '0');
@@ -218,22 +218,22 @@ export default function BuyTicketScreen() {
       return '';
     }
 
-    // Format date as YYYY-MM-DD
+    
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
 
-  // Calculate price when form changes
+  
   const calculatePrice = () => {
-    // Format passenger dates of birth
+    
     const formattedPassengers = watch('passengers').map(passenger => ({
       ...passenger,
       dateOfBirth: formatToYYYYMMDD(passenger.dateOfBirth)
     }));
 
-    // Format connection dates
+    
     const formattedConnections = connections.map(connection => ({
       ...connection,
       connectionDate: formatToYYYYMMDD(connection.connectionDate)
@@ -249,21 +249,21 @@ export default function BuyTicketScreen() {
     calculatePriceMutation.mutate(formData);
   };
 
-  // Submit form
+  
   const onSubmit: SubmitHandler<BuyTicketFormData> = (data) => {
-    // Format passenger dates of birth
+    
     const formattedPassengers = data.passengers.map(passenger => ({
       ...passenger,
       dateOfBirth: formatToYYYYMMDD(passenger.dateOfBirth)
     }));
 
-    // Format connection dates
+    
     const formattedConnections = connections.map(connection => ({
       ...connection,
       connectionDate: formatToYYYYMMDD(connection.connectionDate)
     }));
 
-    // Prepare data for API
+    
     const ticketData: BuyTicketCommand = {
       email: data.email,
       passengers: formattedPassengers,
@@ -275,28 +275,28 @@ export default function BuyTicketScreen() {
   };
 
 
-  // Format date for display
+  
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
 
     try {
-      // If it's just a time string (HH:MM:SS)
+      
       if (/^\d{2}:\d{2}(:\d{2})?$/.test(dateString)) {
         return dateString;
       }
 
-      // Try to parse the date
+      
       const date = new Date(dateString);
 
-      // Check if date is valid
+      
       if (!isNaN(date.getTime())) {
         return date.toLocaleDateString();
       }
 
-      // Return the original string if we can't parse it
+      
       return dateString;
     } catch (error) {
-      // If any error occurs, return the original string
+      
       return dateString;
     }
   };
@@ -314,17 +314,15 @@ export default function BuyTicketScreen() {
             <Text className={textColor}>← Back</Text>
           </Button>
           <Heading className={textColor}>Buy Ticket</Heading>
-          <Box className="w-[50px]" /> {/* Empty box for alignment */}
+          <Box className="w-[50px]" /> {}
         </HStack>
 
-        {/* Connection details */}
         <Box className={`p-3 mb-4 rounded-lg border ${borderColor} ${inputBgColor}`}>
           <Text className={`font-bold ${textColor}`}>{params.startStation} → {params.endStation}</Text>
           <Text className={textColor}>Departure: {formatDate(params.departureTime)}</Text>
           <Text className={textColor}>Arrival: {formatDate(params.arrivalTime)}</Text>
         </Box>
 
-        {/* Email */}
         <Box className="mb-4">
           <Text className={`font-medium mb-1 ${textColor}`}>Email</Text>
           <Controller
@@ -349,7 +347,6 @@ export default function BuyTicketScreen() {
           ) : null}
         </Box>
 
-        {/* Passengers */}
         <Box className="mb-4">
           <HStack className="justify-between items-center mb-2">
             <Text className={`font-medium ${textColor}`}>Passengers</Text>
@@ -379,7 +376,6 @@ export default function BuyTicketScreen() {
                 ) : null}
               </HStack>
 
-              {/* First Name */}
               <Text className={`mb-1 ${textColor}`}>First Name</Text>
               <Controller
                 control={control}
@@ -400,7 +396,6 @@ export default function BuyTicketScreen() {
                 <Text className="text-red-500 mb-2">{errors.passengers[index]?.firstName?.message}</Text>
               ) : null}
 
-              {/* Last Name */}
               <Text className={`mb-1 ${textColor}`}>Last Name</Text>
               <Controller
                 control={control}
@@ -421,7 +416,6 @@ export default function BuyTicketScreen() {
                 <Text className="text-red-500 mb-2">{errors.passengers[index]?.lastName?.message}</Text>
               ) : null}
 
-              {/* Date of Birth */}
               <Text className={`mb-1 ${textColor}`}>Date of Birth (YYYY-MM-DD)</Text>
               <Controller
                 control={control}
@@ -442,7 +436,6 @@ export default function BuyTicketScreen() {
                 <Text className="text-red-500 mb-2">{errors.passengers[index]?.dateOfBirth?.message}</Text>
               ) : null}
 
-              {/* Discount */}
               <Text className={`mb-1 ${textColor}`}>Discount</Text>
               <Controller
                 control={control}
@@ -478,7 +471,6 @@ export default function BuyTicketScreen() {
           ))}
         </Box>
 
-        {/* Discount Code */}
         <Box className="mb-4">
           <Text className={`font-medium mb-1 ${textColor}`}>Discount Code (Optional)</Text>
           <HStack space="sm">
@@ -512,7 +504,6 @@ export default function BuyTicketScreen() {
           ) : null}
         </Box>
 
-        {/* Calculate Price */}
         <Box className="mb-4">
           <Button 
             onPress={calculatePrice}
@@ -531,7 +522,6 @@ export default function BuyTicketScreen() {
           ) : null}
         </Box>
 
-        {/* Payment Method */}
         <Box className="mb-4">
           <Text className={`font-medium mb-1 ${textColor}`}>Payment Method</Text>
           <Controller
@@ -558,7 +548,6 @@ export default function BuyTicketScreen() {
           />
         </Box>
 
-        {/* Buy Button */}
         <Button 
           onPress={handleSubmit(onSubmit)}
           className="bg-green-600 mb-4"

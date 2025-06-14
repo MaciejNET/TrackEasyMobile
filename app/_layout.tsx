@@ -14,7 +14,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 SplashScreen.preventAutoHideAsync();
 
-// Create a client
+
 const queryClient = new QueryClient();
 
 interface SafeTopViewProps {
@@ -34,19 +34,18 @@ function SafeTopView({ children, style }: SafeTopViewProps) {
 export default function RootLayout() {
   const { colorMode, setColorMode, colorModeKey } = useColorMode();
 
-  // Using default system font instead of custom font
+  
   useEffect(() => {
-    // Hide splash screen when component mounts
+    
     SplashScreen.hideAsync();
   }, []);
 
-  // Using colorModeKey in the component to force re-render when color mode changes
+  
   const theme = colorMode === "dark" ? DarkTheme : DefaultTheme;
 
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        {/* Using colorModeKey as a key prop to force complete re-render when color mode changes */}
         <GluestackUIProvider mode={colorMode} key={colorModeKey}>
           <ThemeProvider value={theme}>
             <SafeAreaProvider>

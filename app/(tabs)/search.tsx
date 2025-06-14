@@ -46,7 +46,7 @@ export default function SearchScreen() {
     const [searchParams, setSearchParams] = useState<FormValues | null>(null);
     const [selectedDate, setSelectedDate] = useState(new Date());
 
-    // Initialize manual date/time with current date/time
+    
     const formatDate = (date: Date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -72,25 +72,25 @@ export default function SearchScreen() {
         resolver: zodResolver(formSchema),
     });
 
-    // Update manual date/time fields when selectedDate changes
+    
     useEffect(() => {
         setManualDate(formatDate(selectedDate));
         setManualTime(formatTime(selectedDate));
     }, [selectedDate]);
 
-    // Automatically update selectedDate and form value when manual date/time changes
+    
     useEffect(() => {
         try {
-            // Parse the date and time
+            
             const [year, month, day] = manualDate.split('-').map(Number);
             const [hours, minutes] = manualTime.split(':').map(Number);
 
-            // Create a new date object
+            
             const newDate = new Date(year, month - 1, day, hours, minutes);
 
-            // Check if the date is valid
+            
             if (!isNaN(newDate.getTime())) {
-                // Update the selected date
+                
                 setSelectedDate(newDate);
                 setValue('departureTime', newDate.toISOString());
             }
@@ -99,7 +99,7 @@ export default function SearchScreen() {
         }
     }, [manualDate, manualTime, setValue]);
 
-    // Automatically set departure station to nearest station when it becomes available
+    
     useEffect(() => {
         if (nearestStation) {
             console.log('Nearest station available, setting departure station:', nearestStation.id);
@@ -107,17 +107,17 @@ export default function SearchScreen() {
         }
     }, [nearestStation, setValue]);
 
-    // Watch form values
+    
     const departureStationId = watch('departureStationId');
     const arrivalStationId = watch('arrivalStationId');
 
 
     const onSubmit = (values: FormValues) => {
-        // Get station names for display
+        
         const departureStationName = getDepartureStationName();
         const arrivalStationName = getArrivalStationName();
 
-        // Redirect to connections screen with search parameters
+        
         router.push({
             pathname: '/connections',
             params: {
@@ -131,19 +131,19 @@ export default function SearchScreen() {
     };
 
 
-    // Function to manually set the departure station to the nearest station
+    
     const useCurrentLocation = () => {
         if (nearestStation) {
             setValue('departureStationId', nearestStation.id);
             console.log('Manually setting departure station to nearest station:', nearestStation.id);
         } else {
             console.log('Nearest station not available yet');
-            // The button should be disabled when isLoadingNearestStation is true,
-            // so this case should not happen in normal usage
+            
+            
         }
     };
 
-    // Find station names for display
+    
     const getDepartureStationName = () => {
         if (!departureStationId || !stations) return '';
         const station = stations.find(s => s.id === departureStationId);

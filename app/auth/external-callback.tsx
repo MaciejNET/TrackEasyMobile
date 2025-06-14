@@ -16,7 +16,7 @@ export default function ExternalCallbackScreen() {
   const [error, setError] = useState<string | null>(null);
   const { colorMode } = useColorMode();
 
-  // Define theme-based styles
+  
   const isDark = colorMode === "dark";
   const textColor = isDark ? "text-white" : "text-black";
   const bgColor = isDark ? "bg-black" : "bg-white";
@@ -32,7 +32,7 @@ export default function ExternalCallbackScreen() {
 
       console.log('Handling callback for provider:', provider);
 
-      // Validate provider
+      
       if (provider !== 'google' && provider !== 'microsoft') {
         console.error('Invalid provider in callback:', provider);
         setError(`Invalid provider: ${provider}. Please try again with Google or Microsoft.`);
@@ -48,7 +48,7 @@ export default function ExternalCallbackScreen() {
       } catch (err: any) {
         console.error('External login callback failed:', err);
 
-        // Provide more user-friendly error messages based on the error
+        
         if (err.message.includes('500')) {
           setError('The server encountered an error. Please try again later.');
         } else if (err.message.includes('timeout')) {
@@ -69,18 +69,18 @@ export default function ExternalCallbackScreen() {
       }
     };
 
-    // Add a timeout to prevent the loading state from being stuck indefinitely
+    
     const timeoutId = setTimeout(() => {
       if (isLoading) {
         console.warn('Callback handling timed out after 15 seconds');
         setError('The request timed out. Please try again later.');
         setIsLoading(false);
       }
-    }, 15000); // 15 seconds timeout
+    }, 15000); 
 
     handleCallback();
 
-    // Clean up the timeout when the component unmounts
+    
     return () => clearTimeout(timeoutId);
   }, [provider, handleExternalLoginCallback, router, isLoading]);
 

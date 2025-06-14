@@ -48,7 +48,7 @@ export default function EditAccountScreen() {
             return authApi.updateUser(user.id, data);
         },
         onSuccess: () => {
-            refreshUser(); // Refresh user data in context
+            refreshUser(); 
             Alert.alert("Success", "Your profile has been updated");
             router.back();
         },
@@ -58,7 +58,7 @@ export default function EditAccountScreen() {
         },
     });
 
-    // Fill initial data
+    
     React.useEffect(() => {
         if (user) {
             setValue("firstName", user.firstName);
@@ -82,7 +82,7 @@ export default function EditAccountScreen() {
                     <ButtonText className={textColor}>← Back</ButtonText>
                 </Button>
                 <Text className={`text-2xl font-bold ${textColor}`}>Edit Profile</Text>
-                <Box className="w-[50px]" /> {/* Empty box for alignment */}
+                <Box className="w-[50px]" /> {}
             </Box>
 
             <Box className="space-y-4">

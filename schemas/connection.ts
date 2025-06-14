@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Make the schema more flexible to handle potential variations in the API response
+
 export const connectionDetailSchema = z.object({
     id: z.string(),
     name: z.string(),
@@ -14,7 +14,7 @@ export const connectionDetailSchema = z.object({
     arrivalStation: z.string(),
     price: z.number(),
     duration: z.string(),
-}).passthrough(); // Allow additional properties
+}).passthrough(); 
 
 export const connectionItemSchema = z.object({
     connections: z.array(connectionDetailSchema),
@@ -24,15 +24,15 @@ export const connectionItemSchema = z.object({
     departureTime: z.string(),
     arrivalTime: z.string(),
     totalDuration: z.string(),
-}).passthrough(); // Allow additional properties
+}).passthrough(); 
 
 export const connectionsResponseSchema = z.object({
     items: z.array(connectionItemSchema),
     nextCursor: z.string().nullable(),
     hasNextPage: z.boolean(),
-}).passthrough(); // Allow additional properties
+}).passthrough(); 
 
-// Fallback schema for more lenient parsing if the strict schema fails
+
 export const fallbackConnectionsResponseSchema = z.object({
     items: z.array(z.record(z.any())).optional().default([]),
     nextCursor: z.string().nullable().optional().default(null),

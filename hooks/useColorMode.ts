@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
-// Key for storing color mode preference
+
 const COLOR_MODE_KEY = 'color_mode_preference';
 
 export function useColorMode() {
@@ -10,16 +10,16 @@ export function useColorMode() {
   const [colorModeKey, setColorModeKey] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Custom setColorMode function that also updates the colorModeKey
+  
   const [colorMode, setColorModeInternal] = useState<"dark" | "light">(systemColorScheme === 'dark' ? "dark" : "light");
 
-  // Wrapper for setColorMode that also increments the key to force re-render
+  
   const setColorMode = (newColorMode: "dark" | "light") => {
     setColorModeInternal(newColorMode);
     setColorModeKey(prev => prev + 1);
   };
 
-  // Load color mode preference from SecureStore on mount
+  
   useEffect(() => {
     const loadColorMode = async () => {
       try {
@@ -37,12 +37,12 @@ export function useColorMode() {
     loadColorMode();
   }, []);
 
-  // Update colorMode when system theme changes, but only if no preference is stored
+  
   useEffect(() => {
     const checkSystemTheme = async () => {
       try {
         const storedColorMode = await SecureStore.getItemAsync(COLOR_MODE_KEY);
-        // Only use system theme if no preference is stored
+        
         if (!storedColorMode && systemColorScheme) {
           setColorMode(systemColorScheme === 'dark' ? "dark" : "light");
         }
@@ -54,10 +54,10 @@ export function useColorMode() {
     checkSystemTheme();
   }, [systemColorScheme]);
 
-  // Toggle color mode and save preference to SecureStore
+  
   const toggleColorMode = async () => {
     const newColorMode = colorMode === "dark" ? "light" : "dark";
-    // Use the wrapper setColorMode function which already increments the key
+    
     setColorMode(newColorMode);
 
     try {
@@ -72,6 +72,6 @@ export function useColorMode() {
     setColorMode,
     toggleColorMode,
     isLoading,
-    colorModeKey, // Export the key for use in the root layout
+    colorModeKey, 
   };
 }
