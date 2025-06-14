@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -43,7 +43,7 @@ type BuyTicketFormData = {
     firstName: string;
     lastName: string;
     dateOfBirth: string;
-    discountId: string | null;
+    discountId: string | null | undefined;
   }[];
   discountCode: string;
   paymentMethod: 'card' | 'cash';
@@ -181,7 +181,7 @@ export default function BuyTicketScreen() {
           pathname: '/payment',
           params: {
             ticketIds: JSON.stringify(data),
-            price: ticketPrice?.toString() || '0',
+            price: ticketPrice?.toFixed(2) || '0.00',
             currency: currency
           }
         });
@@ -250,7 +250,7 @@ export default function BuyTicketScreen() {
   };
 
   // Submit form
-  const onSubmit = (data: BuyTicketFormData) => {
+  const onSubmit: SubmitHandler<BuyTicketFormData> = (data) => {
     // Format passenger dates of birth
     const formattedPassengers = data.passengers.map(passenger => ({
       ...passenger,
@@ -516,7 +516,6 @@ export default function BuyTicketScreen() {
         <Box className="mb-4">
           <Button 
             onPress={calculatePrice}
-            isLoading={calculatePriceMutation.isPending}
             className="bg-blue-500"
           >
             <Text className="text-white">Calculate Price</Text>
@@ -524,7 +523,7 @@ export default function BuyTicketScreen() {
 
           {ticketPrice !== null ? (
             <Box className={`mt-2 p-3 rounded-lg border ${borderColor} ${inputBgColor}`}>
-              <Text className={`font-bold ${textColor}`}>Total Price: {ticketPrice} {currency}</Text>
+              <Text className={`font-bold ${textColor}`}>Total Price: {ticketPrice?.toFixed(2) || '0.00'} {currency}</Text>
               {discountPercentage ? (
                 <Text className="text-green-500">Includes {discountPercentage}% discount</Text>
               ) : null}
@@ -562,7 +561,6 @@ export default function BuyTicketScreen() {
         {/* Buy Button */}
         <Button 
           onPress={handleSubmit(onSubmit)}
-          isLoading={buyTicketMutation.isPending}
           className="bg-green-600 mb-4"
         >
           <Text className="text-white font-bold">Buy Ticket</Text>

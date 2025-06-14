@@ -99,6 +99,14 @@ export default function SearchScreen() {
         }
     }, [manualDate, manualTime, setValue]);
 
+    // Automatically set departure station to nearest station when it becomes available
+    useEffect(() => {
+        if (nearestStation) {
+            console.log('Nearest station available, setting departure station:', nearestStation.id);
+            setValue('departureStationId', nearestStation.id);
+        }
+    }, [nearestStation, setValue]);
+
     // Watch form values
     const departureStationId = watch('departureStationId');
     const arrivalStationId = watch('arrivalStationId');
@@ -123,9 +131,15 @@ export default function SearchScreen() {
     };
 
 
+    // Function to manually set the departure station to the nearest station
     const useCurrentLocation = () => {
         if (nearestStation) {
             setValue('departureStationId', nearestStation.id);
+            console.log('Manually setting departure station to nearest station:', nearestStation.id);
+        } else {
+            console.log('Nearest station not available yet');
+            // The button should be disabled when isLoadingNearestStation is true,
+            // so this case should not happen in normal usage
         }
     };
 
