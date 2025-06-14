@@ -152,7 +152,7 @@ export default function SearchScreen() {
                     <Box className="flex-1">
                         <Select onValueChange={(v: string) => setValue('departureStationId', v)} selectedValue={departureStationId}>
                             <SelectTrigger variant="outline" size="md" className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md">
-                                <SelectInput placeholder="Select departure station" />
+                                <SelectInput placeholder="Select departure station" value={getDepartureStationName()} />
                                 <SelectIcon className="mr-3" as={Ionicons} />
                             </SelectTrigger>
                             <SelectPortal>
@@ -191,7 +191,7 @@ export default function SearchScreen() {
                 <Text>Arrival Station</Text>
                 <Select onValueChange={(v: string) => setValue('arrivalStationId', v)} selectedValue={arrivalStationId}>
                     <SelectTrigger variant="outline" size="md" className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md">
-                        <SelectInput placeholder="Select arrival station" />
+                        <SelectInput placeholder="Select arrival station" value={getArrivalStationName()} />
                         <SelectIcon className="mr-3" as={Ionicons} />
                     </SelectTrigger>
                     <SelectPortal>
