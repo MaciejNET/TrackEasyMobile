@@ -56,9 +56,9 @@ export function GluestackUIProvider({
     }
   }, [mode]);
 
-  // Force re-render when mode changes
+  
   React.useEffect(() => {
-    // This is just to ensure the component re-renders when mode changes
+    
   }, [mode]);
 
   useSafeLayoutEffect(() => {

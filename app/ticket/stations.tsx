@@ -12,29 +12,29 @@ import { useColorMode } from "@/hooks/useColorMode";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Station } from "@/schemas/ticket";
 
-// Format time only (HH:MM)
+
 const formatTime = (timeString: string | null): string => {
     if (!timeString) return 'N/A';
 
     try {
-        // If it's just a time string (HH:MM:SS)
+        
         if (/^\d{2}:\d{2}(:\d{2})?$/.test(timeString)) {
-            // Return just HH:MM
+            
             return timeString.substring(0, 5);
         }
 
-        // Try to parse as date
+        
         const date = new Date(timeString);
 
-        // Check if date is valid
+        
         if (!isNaN(date.getTime())) {
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        // Return the original string if we can't parse it
+        
         return timeString;
     } catch (error) {
-        // If any error occurs, return the original string
+        
         return timeString;
     }
 };
@@ -49,7 +49,7 @@ export default function StationsScreen() {
     const bgColor = isDark ? "bg-gray-800" : "bg-white";
     const cardBgColor = isDark ? "bg-gray-700" : "bg-gray-100";
 
-    // Parse the stations from the URL parameter
+    
     const parsedStations: Station[] = stationsParam ? JSON.parse(stationsParam) : [];
     const sortedStations = parsedStations.sort(
       (a, b) => a.sequenceNumber - b.sequenceNumber
@@ -66,7 +66,7 @@ export default function StationsScreen() {
                     <Text className={`${textColor}`}>← Back</Text>
                 </Button>
                 <Heading className={`${textColor}`}>All Stations</Heading>
-                <Box className="w-[50px]" /> {/* Empty box for alignment */}
+                <Box className="w-[50px]" /> {}
             </HStack>
 
             {parsedStations.length === 0 ? (

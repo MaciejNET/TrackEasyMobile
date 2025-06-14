@@ -213,7 +213,7 @@ const SelectIcon = React.forwardRef<
       />
     );
   } else if (
-    //@ts-expect-error : web only
+    
     (props?.height !== undefined || props?.width !== undefined) &&
     size === undefined
   ) {
@@ -245,7 +245,7 @@ SelectTrigger.displayName = 'SelectTrigger';
 SelectInput.displayName = 'SelectInput';
 SelectIcon.displayName = 'SelectIcon';
 
-// Actionsheet Components
+
 const SelectPortal = UISelect.Portal;
 const SelectBackdrop = UISelect.Backdrop;
 const SelectContent = UISelect.Content;

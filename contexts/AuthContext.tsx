@@ -143,17 +143,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const handleExternalLoginCallback = async (provider: string) => {
     setIsLoading(true);
     try {
-      // Handle the callback from the external provider
+      
       const authToken = await authApi.handleExternalLoginCallback(provider);
 
-      // Save token to secure storage
+      
       await SecureStore.setItemAsync(TOKEN_KEY, authToken);
 
-      // Set token in state and axios defaults
+      
       setToken(authToken);
       setAuthToken(authToken);
 
-      // Fetch user data
+      
       await fetchUserData(authToken);
     } catch (error) {
       console.error('External login callback failed:', error);
@@ -163,7 +163,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Provide the auth context
+  
   return (
     <AuthContext.Provider
       value={{
@@ -184,7 +184,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-// Custom hook to use the auth context
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

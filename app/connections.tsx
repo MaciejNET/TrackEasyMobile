@@ -8,55 +8,55 @@ import { FlatList, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { HStack } from '@/components/ui/hstack';
 
-// Format date and time for display
+
 const formatDateTime = (dateString: string): string => {
     if (!dateString) return 'N/A';
 
     try {
-        // Try to parse the date
+        
         const date = new Date(dateString);
 
-        // Check if date is valid
+        
         if (!isNaN(date.getTime())) {
             return date.toLocaleString();
         }
 
-        // If it's just a time string (HH:MM:SS)
+        
         if (/^\d{2}:\d{2}(:\d{2})?$/.test(dateString)) {
             return dateString;
         }
 
-        // Return the original string if we can't parse it
+        
         return dateString;
     } catch (error) {
-        // If any error occurs, return the original string
+        
         return dateString;
     }
 };
 
-// Format time only (HH:MM)
+
 const formatTime = (timeString: string): string => {
     if (!timeString) return 'N/A';
 
     try {
-        // If it's just a time string (HH:MM:SS)
+        
         if (/^\d{2}:\d{2}(:\d{2})?$/.test(timeString)) {
-            // Return just HH:MM
+            
             return timeString.substring(0, 5);
         }
 
-        // Try to parse as date
+        
         const date = new Date(timeString);
 
-        // Check if date is valid
+        
         if (!isNaN(date.getTime())) {
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        // Return the original string if we can't parse it
+        
         return timeString;
     } catch (error) {
-        // If any error occurs, return the original string
+        
         return timeString;
     }
 };
@@ -71,14 +71,14 @@ export default function ConnectionsScreen() {
         endStationName: string;
     }>();
 
-    // Extract search parameters from URL
+    
     const searchParams = {
         startStationId: params.startStationId || '',
         endStationId: params.endStationId || '',
         departureTime: params.departureTime || '',
     };
 
-    // Get station names for display
+    
     const startStationName = params.startStationName || '';
     const endStationName = params.endStationName || '';
 
@@ -92,7 +92,7 @@ export default function ConnectionsScreen() {
         isLoading,
     } = useConnectionsQuery(searchParams);
 
-    // Go back to search screen
+    
     const handleBackPress = () => {
         router.back();
     };
@@ -110,7 +110,7 @@ export default function ConnectionsScreen() {
                         <Text className="text-blue-500 dark:text-blue-400">← Back</Text>
                     </Button>
                     <Heading size="lg">Connections</Heading>
-                    <Box className="w-[50px]" /> {/* Empty box for alignment */}
+                    <Box className="w-[50px]" /> {}
                 </HStack>
 
                 <Box className="mb-4">
@@ -167,21 +167,21 @@ export default function ConnectionsScreen() {
 
                                     <Button 
                                         onPress={() => {
-                                            // Format date to YYYY-MM-DD
+                                            
                                             const formatToYYYYMMDD = (dateString: string): string => {
                                                 if (!dateString) return new Date().toISOString().split('T')[0];
 
-                                                // If already in YYYY-MM-DD format, return as is
+                                                
                                                 if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
                                                     return dateString;
                                                 }
 
-                                                // Try to extract date part from ISO format
+                                                
                                                 if (dateString.includes('T')) {
                                                     return dateString.split('T')[0];
                                                 }
 
-                                                // Try to extract date part from space-separated format
+                                                
                                                 if (dateString.includes(' ')) {
                                                     const datePart = dateString.split(' ')[0];
                                                     if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
@@ -189,7 +189,7 @@ export default function ConnectionsScreen() {
                                                     }
                                                 }
 
-                                                // Try to parse the date
+                                                
                                                 const date = new Date(dateString);
                                                 if (!isNaN(date.getTime())) {
                                                     const year = date.getFullYear();
@@ -198,14 +198,14 @@ export default function ConnectionsScreen() {
                                                     return `${year}-${month}-${day}`;
                                                 }
 
-                                                // Default to current date if all else fails
+                                                
                                                 return new Date().toISOString().split('T')[0];
                                             };
 
-                                            // Extract connection date from departureTime (YYYY-MM-DD)
+                                            
                                             const connectionDate = formatToYYYYMMDD(item?.departureTime || '');
 
-                                            // Prepare connection data for ticket purchase
+                                            
                                             const connections = item?.connections?.map(connection => ({
                                                 id: connection.id,
                                                 startStationId: connection.departureStationId,
@@ -213,7 +213,7 @@ export default function ConnectionsScreen() {
                                                 connectionDate: connectionDate
                                             })) || [];
 
-                                            // Navigate to buy ticket screen with connection data
+                                            
                                             router.push({
                                                 pathname: '/buy-ticket',
                                                 params: {
@@ -238,7 +238,6 @@ export default function ConnectionsScreen() {
                         <Text className="text-lg font-semibold">No connections found</Text>
                         <Text className="text-sm mt-2">Try different search parameters</Text>
 
-                        {/* Show search parameters for debugging */}
                         <Box className="mt-6 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
                             <Text className="font-bold mb-2">Search Parameters:</Text>
                             <Text>From: {startStationName || searchParams.startStationId}</Text>

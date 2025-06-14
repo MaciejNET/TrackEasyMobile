@@ -14,7 +14,7 @@ export default function AccountScreen() {
   const router = useRouter();
   const { colorMode, toggleColorMode, colorModeKey } = useColorMode();
 
-  // Define theme-based styles
+  
   const isDark = colorMode === "dark";
   const textColor = isDark ? "text-white" : "text-black";
   const buttonBgColor = isDark ? "bg-white" : "bg-black";

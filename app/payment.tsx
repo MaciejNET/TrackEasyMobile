@@ -32,7 +32,7 @@ import {
   PayTicketByCardCommand
 } from '@/schemas/ticket-purchase';
 
-// Form data type
+
 type PaymentFormData = {
   cardNumber: string;
   cardExpMonth: string;
@@ -56,12 +56,12 @@ export default function PaymentScreen() {
   const inputBgColor = isDark ? 'bg-gray-700' : 'bg-white';
   const borderColor = isDark ? 'border-gray-600' : 'border-gray-300';
 
-  // Parse ticket IDs from URL params
+  
   const ticketIds: string[] = params.ticketIds ? JSON.parse(params.ticketIds) : [];
   const price = params.price ? parseFloat(params.price) : 0;
   const initialCurrency = (params.currency as 'PLN' | 'EUR' | 'USD') || 'PLN';
 
-  // Form validation and state
+  
   const { control, handleSubmit, formState: { errors } } = useForm<PaymentFormData>({
     resolver: zodResolver(z.object({
       cardNumber: z.string().regex(/^\d{16}$/, { message: 'Card number must be 16 digits' }),
@@ -79,7 +79,7 @@ export default function PaymentScreen() {
     }
   });
 
-  // Pay with card mutation
+  
   const payWithCardMutation = useMutation({
     mutationFn: (data: PayTicketByCardCommand) => ticketPurchaseApi.payWithCard(data),
     onSuccess: () => {
@@ -95,7 +95,7 @@ export default function PaymentScreen() {
     }
   });
 
-  // Submit card payment
+  
   const onSubmit = (data: PaymentFormData) => {
     if (ticketIds.length === 0) {
       Alert.alert('Error', 'No tickets to pay for');
@@ -126,7 +126,7 @@ export default function PaymentScreen() {
           <Text className={textColor}>← Back</Text>
         </Button>
         <Heading className={textColor}>Payment</Heading>
-        <Box className="w-[50px]" /> {/* Empty box for alignment */}
+        <Box className="w-[50px]" /> {}
       </HStack>
 
       <VStack space="md" className="mb-4">

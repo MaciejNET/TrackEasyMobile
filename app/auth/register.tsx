@@ -19,7 +19,7 @@ export default function RegisterScreen() {
   const [error, setError] = useState<string | null>(null);
   const { colorMode } = useColorMode();
 
-  // Define theme-based styles
+  
   const isDark = colorMode === "dark";
   const textColor = isDark ? "text-white" : "text-black";
   const buttonBgColor = isDark ? "bg-white" : "bg-black";
@@ -45,17 +45,17 @@ export default function RegisterScreen() {
     setError(null);
 
     try {
-      // Validate data with Zod schema
+      
       const validationResult = registerSchema.safeParse(data);
 
       if (!validationResult.success) {
-        // Get the first error message
+        
         const errorMessage = validationResult.error.errors[0]?.message || 'Validation failed';
         setError(errorMessage);
         return;
       }
 
-      // Format date as YYYY-MM-DD
+      
       const dateOfBirth = formatDateString(data.dateOfBirth);
 
       await register(
@@ -74,9 +74,9 @@ export default function RegisterScreen() {
     }
   };
 
-  // Helper function to format date string to YYYY-MM-DD
+  
   const formatDateString = (dateString: string): string => {
-    // Simple validation for MM/DD/YYYY format
+    
     const dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
 
     if (dateRegex.test(dateString)) {
@@ -84,7 +84,7 @@ export default function RegisterScreen() {
       return `${year}-${month}-${day}`;
     }
 
-    return dateString; // Return as is if not in expected format
+    return dateString; 
   };
 
   const navigateToLogin = () => {

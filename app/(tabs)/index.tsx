@@ -16,50 +16,50 @@ import { useColorMode } from "@/hooks/useColorMode";
 import { Ticket } from "@/schemas/ticket";
 import { useRouter } from "expo-router";
 
-// Format time only (HH:MM)
+
 const formatTime = (timeString: string): string => {
     if (!timeString) return 'N/A';
 
     try {
-        // If it's just a time string (HH:MM:SS)
+        
         if (/^\d{2}:\d{2}(:\d{2})?$/.test(timeString)) {
-            // Return just HH:MM
+            
             return timeString.substring(0, 5);
         }
 
-        // Try to parse as date
+        
         const date = new Date(timeString);
 
-        // Check if date is valid
+        
         if (!isNaN(date.getTime())) {
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        // Return the original string if we can't parse it
+        
         return timeString;
     } catch (error) {
-        // If any error occurs, return the original string
+        
         return timeString;
     }
 };
 
-// Format date for display
+
 const formatDate = (dateString: string): string => {
     if (!dateString) return 'N/A';
 
     try {
-        // Try to parse the date
+        
         const date = new Date(dateString);
 
-        // Check if date is valid
+        
         if (!isNaN(date.getTime())) {
             return date.toLocaleDateString();
         }
 
-        // Return the original string if we can't parse it
+        
         return dateString;
     } catch (error) {
-        // If any error occurs, return the original string
+        
         return dateString;
     }
 };
@@ -79,7 +79,7 @@ export default function TicketsScreen() {
     const [pageNumber, setPageNumber] = useState(0);
     const router = useRouter();
 
-    // Fetch tickets
+    
     const {
         data: ticketsData,
         isLoading: ticketsLoading,
@@ -92,7 +92,7 @@ export default function TicketsScreen() {
     });
 
     const handleTicketPress = (ticket: Ticket) => {
-        // Pass the tab parameter to indicate whether the ticket is from the current tab or the archive tab
+        
         router.push({
             pathname: "/ticket/[id]",
             params: { id: ticket.id, tab }
@@ -119,7 +119,6 @@ export default function TicketsScreen() {
         <Box className={`flex-1 p-4 ${bgColor}`} key={colorModeKey}>
             <Heading className={`mb-4 ${textColor}`}>Your Tickets</Heading>
 
-            {/* Tabs */}
             <HStack className="mb-4 space-x-6">
                 <Pressable 
                     onPress={() => { 
@@ -149,7 +148,6 @@ export default function TicketsScreen() {
                 </Pressable>
             </HStack>
 
-            {/* Tickets List */}
             {ticketsLoading ? (
                 <Center className="flex-1" key={colorModeKey}>
                     <Spinner size="large" />

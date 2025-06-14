@@ -19,7 +19,7 @@ export default function LoginScreen() {
   const [error, setError] = useState<string | null>(null);
   const { colorMode } = useColorMode();
 
-  // Define theme-based styles
+  
   const isDark = colorMode === "dark";
   const textColor = isDark ? "text-white" : "text-black";
   const buttonBgColor = isDark ? "bg-white" : "bg-black";
@@ -39,17 +39,17 @@ export default function LoginScreen() {
     setError(null);
 
     try {
-      // Validate data with Zod schema
+      
       const validationResult = loginSchema.safeParse(data);
 
       if (!validationResult.success) {
-        // Get the first error message
+        
         const errorMessage = validationResult.error.errors[0]?.message || 'Validation failed';
         setError(errorMessage);
         return;
       }
 
-      // Data is valid, proceed with login
+      
       await login(data.email, data.password);
       router.replace('/(tabs)');
     } catch (err: any) {
