@@ -94,11 +94,25 @@ const ticketPurchaseApi = {
       const response = await baseApi.post('/tickets/price', ticketData);
 
       // Preprocess the response data
+      // The API may return a MoneyDto with fields `amount` and `currency`
+      const rawAmount =
+        response.data.amount !== undefined
+          ? response.data.amount
+          : response.data.price;
+
+      const priceValue =
+        typeof rawAmount === 'string' ? parseFloat(rawAmount) : rawAmount;
+
+      if (priceValue === undefined || isNaN(priceValue)) {
+        throw new Error('Invalid price value received from server');
+      }
+
       const preprocessedData = {
-        price: response.data.price ?? 0, // Default to 0 if price is undefined
-        currency: typeof response.data.currency === 'number' 
-          ? ticketPurchaseApi.mapCurrencyCodeToString(response.data.currency) 
-          : response.data.currency
+        price: priceValue,
+        currency:
+          typeof response.data.currency === 'number'
+            ? ticketPurchaseApi.mapCurrencyCodeToString(response.data.currency)
+            : response.data.currency,
       };
 
       // Parse response with Zod schema
