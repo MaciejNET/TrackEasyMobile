@@ -9,8 +9,8 @@ The implementation allows users to sign in or register using their Google or Mic
 1. User clicks on the Google or Microsoft button on the login screen
 2. User is prompted to enter their first name, last name, and date of birth
 3. User is redirected to the external provider for authentication
-4. After authentication, the user is redirected back to the app
-5. The app completes the authentication process and redirects the user to the home screen
+4. After authentication, the backend returns a token to the callback page
+5. The WebView captures the token and the app completes the authentication process before redirecting the user to the home screen
 
 ## Files Modified/Created
 
@@ -19,7 +19,8 @@ The implementation allows users to sign in or register using their Google or Mic
 - `services/auth.ts`: Added methods for external authentication
 - `app/auth/login.tsx`: Added UI components for Google and Microsoft login buttons
 - `app/auth/external-login.tsx`: Created screen for collecting user details for external authentication
-- `app/auth/external-callback.tsx`: Created screen for handling external authentication callback
+- `app/auth/WebViewAuth.tsx`: Updated to read the token directly from the callback page
+- `app/auth/external-callback.tsx`: Screen for handling a token-based deep link callback
 
 ## Backend Integration
 

@@ -9,8 +9,8 @@ import { useColorMode } from '@/hooks/useColorMode';
 
 export default function ExternalCallbackScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ provider: string }>();
-  const provider = params.provider;
+  const params = useLocalSearchParams<{ token?: string }>();
+  const token = params.token;
   const { handleExternalLoginCallback } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,26 +23,16 @@ export default function ExternalCallbackScreen() {
 
   useEffect(() => {
     const handleCallback = async () => {
-      if (!provider) {
-        console.error('Provider not specified in callback');
-        setError('Provider not specified. Please try again from the login screen.');
-        setIsLoading(false);
-        return;
-      }
-
-      console.log('Handling callback for provider:', provider);
-
-      
-      if (provider !== 'google' && provider !== 'microsoft') {
-        console.error('Invalid provider in callback:', provider);
-        setError(`Invalid provider: ${provider}. Please try again with Google or Microsoft.`);
+      if (!token) {
+        console.error('Token not provided in callback');
+        setError('Authentication token missing. Please try again.');
         setIsLoading(false);
         return;
       }
 
       try {
-        console.log('Calling handleExternalLoginCallback with provider:', provider);
-        await handleExternalLoginCallback(provider);
+        console.log('Calling handleExternalLoginCallback with token');
+        await handleExternalLoginCallback(token);
         console.log('External login callback successful, redirecting to home');
         router.replace('/(tabs)');
       } catch (err: any) {
@@ -82,7 +72,7 @@ export default function ExternalCallbackScreen() {
 
     
     return () => clearTimeout(timeoutId);
-  }, [provider, handleExternalLoginCallback, router, isLoading]);
+  }, [token, handleExternalLoginCallback, router, isLoading]);
 
   if (isLoading) {
     return (
