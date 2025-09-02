@@ -149,64 +149,6 @@ export const authApi = {
   },
 
   
-  handleExternalLoginCallback: async (provider: string) => {
-    try {
-      
-      console.log('Handling external login callback for provider:', provider);
-
-      
-      if (!provider || (provider !== 'google' && provider !== 'microsoft')) {
-        console.error('Invalid provider:', provider);
-        throw new Error(`Invalid provider: ${provider}. Must be 'google' or 'microsoft'.`);
-      }
-
-      
-      console.log(`Making request to: /users/external/${provider}/callback`);
-
-      
-      const response = await baseApi.get(`/users/external/${provider}/callback`, {
-        timeout: 10000 
-      });
-
-      
-      console.log('External login callback response status:', response.status);
-      console.log('External login callback response data:', response.data);
-
-      
-      if (!response.data) {
-        console.error('Empty response data from callback');
-        throw new Error('Empty response data from callback');
-      }
-
-      return response.data;
-    } catch (error: any) {
-      console.error('External login callback failed:', error);
-      console.error('Error details:', error.message);
-
-      if (error.response) {
-        console.error('Response status:', error.response.status);
-        console.error('Response data:', error.response.data);
-
-        
-        if (error.response.status === 400) {
-          throw new Error('Bad request: The server could not understand the request.');
-        } else if (error.response.status === 401) {
-          throw new Error('Unauthorized: Authentication is required and has failed.');
-        } else if (error.response.status === 403) {
-          throw new Error('Forbidden: You do not have permission to access this resource.');
-        } else if (error.response.status === 404) {
-          throw new Error('Not found: The requested resource could not be found.');
-        } else if (error.response.status === 500) {
-          throw new Error('Server error: The server encountered an unexpected condition.');
-        }
-      }
-
-      
-      throw new Error(`External login callback failed: ${error.message}`);
-    }
-  },
-
-  
   updateUser: async (userId: string, userData: { firstName: string; lastName: string; dateOfBirth: string }) => {
     try {
       const response = await baseApi.patch(`/users/${userId}/update`, {

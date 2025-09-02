@@ -12,7 +12,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (firstName: string, lastName: string, email: string, password: string, dateOfBirth: string) => Promise<void>;
   externalLogin: (provider: 'google' | 'microsoft', firstName: string, lastName: string, dateOfBirth: string) => Promise<void>;
-  handleExternalLoginCallback: (provider: string) => Promise<void>;
+  handleExternalLoginCallback: (token: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -140,20 +140,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(false);
     }
   };
-  const handleExternalLoginCallback = async (provider: string) => {
+  const handleExternalLoginCallback = async (authToken: string) => {
     setIsLoading(true);
     try {
-      
-      const authToken = await authApi.handleExternalLoginCallback(provider);
-
-      
       await SecureStore.setItemAsync(TOKEN_KEY, authToken);
-
-      
       setToken(authToken);
       setAuthToken(authToken);
-
-      
       await fetchUserData(authToken);
     } catch (error) {
       console.error('External login callback failed:', error);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { WebView } from 'react-native-webview';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
@@ -20,31 +20,37 @@ export default function WebViewAuth({ url, provider, onCancel }: WebViewAuthProp
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { colorMode } = useColorMode();
+  const webViewRef = useRef<WebView>(null);
 
-  
   const isDark = colorMode === "dark";
   const textColor = isDark ? "text-white" : "text-black";
   const bgColor = isDark ? "bg-black" : "bg-white";
 
-  
-  const handleNavigationStateChange = async (navState: any) => {
+  const handleNavigationStateChange = (navState: any) => {
     console.log('WebView navigation state changed:', navState);
 
-    
     if (navState.url.includes('/users/external/' + provider + '/callback')) {
       console.log('Detected callback URL:', navState.url);
-      setIsLoading(true);
+      webViewRef.current?.injectJavaScript(
+        "window.ReactNativeWebView.postMessage(document.body.innerText); true;"
+      );
+    }
+  };
 
-      try {
-        
-        await handleExternalLoginCallback(provider);
-        console.log('External login callback successful, redirecting to home');
-        router.replace('/(tabs)');
-      } catch (err: any) {
-        console.error('External login callback failed:', err);
-        setError(err.message || 'Authentication failed. Please try again.');
-        setIsLoading(false);
-      }
+  const handleMessage = async (event: any) => {
+    const token = event.nativeEvent.data;
+    if (!token) {
+      setError('Authentication failed. Please try again.');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await handleExternalLoginCallback(token);
+      router.replace('/(tabs)');
+    } catch (err: any) {
+      console.error('External login callback failed:', err);
+      setError(err.message || 'Authentication failed. Please try again.');
+      setIsLoading(false);
     }
   };
 
@@ -83,8 +89,10 @@ export default function WebViewAuth({ url, provider, onCancel }: WebViewAuthProp
       </Box>
 
       <WebView
+        ref={webViewRef}
         source={{ uri: url }}
         onNavigationStateChange={handleNavigationStateChange}
+        onMessage={handleMessage}
         onLoadStart={() => setIsLoading(true)}
         onLoadEnd={() => setIsLoading(false)}
         javaScriptEnabled={true}
