@@ -25,8 +25,12 @@ export const useConnectionsQuery = (params: QueryParams) => {
             try {
                 const res = await searchApi.get('/connections', {
                     params: {
-                        ...params,
-                        departureTime: pageParam,
+                        startStationId: params.startStationId,
+                        endStationId: params.endStationId,
+                        ...(pageParam && pageParam !== params.departureTime
+                            ? { cursor: pageParam }
+                            : { departureTime: params.departureTime }
+                        ),
                     },
                     timeout: 30000, 
                 });

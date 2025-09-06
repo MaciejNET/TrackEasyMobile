@@ -12,7 +12,10 @@ export const connectionDetailSchema = z.object({
     departureStation: z.string(),
     arrivalStationId: z.string(),
     arrivalStation: z.string(),
-    price: z.number(),
+    price: z.object({
+        amount: z.number(),
+        currency: z.number(),
+    }),
     duration: z.string(),
 }).passthrough(); 
 

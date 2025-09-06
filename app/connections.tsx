@@ -8,6 +8,25 @@ import { FlatList, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { HStack } from '@/components/ui/hstack';
 
+// Map backend numeric currency enum to human-readable code
+const currencyCodeFromEnum = (code: number | string | undefined | null): 'PLN' | 'EUR' | 'USD' | '' => {
+    if (code === null || code === undefined) return '';
+    if (typeof code === 'string') {
+        // if backend already returns string, normalize and validate
+        if (code === 'PLN' || code === 'EUR' || code === 'USD') return code;
+        // attempt to parse numeric string
+        const n = Number(code);
+        if (!Number.isNaN(n)) code = n as unknown as number;
+        else return '';
+    }
+    switch (code as number) {
+        case 0: return 'PLN';
+        case 1: return 'EUR';
+        case 2: return 'USD';
+        default: return '';
+    }
+};
+
 
 const formatDateTime = (dateString: string): string => {
     if (!dateString) return 'N/A';
@@ -160,7 +179,7 @@ export default function ConnectionsScreen() {
                                             <Text>{formatTime(connection?.departureTime || '')} - {formatTime(connection?.arrivalTime || '')}</Text>
                                             <HStack className="justify-between">
                                                 <Text>Duration: {connection?.duration || 'N/A'}</Text>
-                                                <Text className="font-bold">${connection?.price ?? 0}</Text>
+                                                <Text className="font-bold">{typeof connection?.price === 'object' && connection?.price !== null ? `${Number(connection.price.amount).toFixed(2)} ${currencyCodeFromEnum(connection.price.currency)}` : `$${Number(connection?.price ?? 0).toFixed(2)}`}</Text>
                                             </HStack>
                                         </Box>
                                     )) || <Text className="mt-2 italic">No connection details available</Text>}
@@ -206,7 +225,7 @@ export default function ConnectionsScreen() {
                                             const connectionDate = formatToYYYYMMDD(item?.departureTime || '');
 
                                             
-                                            const connections = item?.connections?.map(connection => ({
+                                            const connections = item?.connections?.map((connection: any) => ({
                                                 id: connection.id,
                                                 startStationId: connection.departureStationId,
                                                 endStationId: connection.arrivalStationId,
